@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skolans Escape Room – 10 Rum mot Mobbning</title>
+  <title>Skolans Escape Room – Från Mobbning till Trygghet</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Plus Jakarta Sans, Caveat för handstil & JetBrains Mono för koder -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
       from { opacity: 0; transform: scale(0.99); }
       to { opacity: 1; transform: scale(1); }
     }
-    .animate-room-change { animation: room-fade-in 0.3s ease-out forwards; }
+    .animate-room-change { animation: room-fade-in 0.35s ease-out forwards; }
 
     @keyframes unlock-pop {
       0% { transform: scale(1); }
@@ -46,47 +46,47 @@
     .animate-shake { animation: shake 0.4s ease-in-out; }
   </style>
 </head>
-<body class="bg-[#06120e] text-slate-100 min-h-screen selection:bg-amber-400 selection:text-slate-950 flex flex-col justify-between p-3 md:p-6">
+<body class="bg-[#050e0b] text-slate-100 min-h-screen selection:bg-amber-400 selection:text-slate-950 flex flex-col justify-between p-3 md:p-6">
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useEffect } = React;
 
     // ========================================================
-    // 10 RUM: STRÄNG ORSAKSKEDJA (LÄS LEDTRÅD -> LÖS PUSSEL -> LÅS UPP)
+    // 10 RUM: VARJE RUM MED UNIK MILJÖ OCH INTERAKTIVT LÅS
     // ========================================================
     const ROOMS = [
       {
         id: 1,
         title: "Klassrum 8B",
-        subtitle: "Dörren är låst. Undersök whiteboarden först för att förstå låsmekanismen i bänken.",
+        subtitle: "Lektionen är slut men dörren är låst. Undersök whiteboarden först.",
         doorLabel: "KLASSRUMMET",
         doorType: "padlock",
         keyItem: "Klassrumsnyckeln",
-        cluePrompt: "Whiteboarden med lärarens genomgång",
+        cluePrompt: "Whiteboarden med genomgången",
         puzzlePrompt: "Katederns låsta lönnfack",
         clue: {
           title: "Genomgång: Icke-våldsam kommunikation",
-          text: "När konflikter uppstår i klassen eskalerar de lätt till kränkningar om vi angriper person istället för sak. Modellen för icke-våldsam kommunikation bygger på en strikt fyrstegssekvens: Först gör man en objektiv observation utan värdeord. Därefter uttrycker man sin personliga känsla. Sedan sätter man ord på vilket grundläggande behov som saknas. Först därefter formulerar man en konkret, genomförbar önskan."
+          text: "I en trygg klass löser vi konflikter sakligt. Enligt psykologin sker det i 4 steg: 1. Observation (beskriv sakligt vad som hände utan värdeord), 2. Känsla (berätta hur det känns inombords), 3. Behov (vad behöver du för att det ska bli bra), 4. Önskan (konkret förslag på vad motparten kan göra nu)."
         },
         puzzle: {
           type: "reorder",
           title: "Ställ in konfliktlösningens fyra steg i rätt sekvens",
           instruction: "Flytta stegen så att de följer den pedagogiska kedjan som beskrevs på whiteboarden:",
           initial: [
-            { id: "4", text: "4. Önskan: Konkret förslag på vad motparten kan göra annorlunda" },
+            { id: "4", text: "4. Önskan: Konkret förslag på vad personen kan göra annorlunda" },
             { id: "1", text: "1. Observation: Saklig beskrivning av vad som hände utan anklagelser" },
-            { id: "3", text: "3. Behov: Identifiera vilket behov (respekt/trygghet) som inte uppfylldes" },
+            { id: "3", text: "3. Behov: Identifiera vilket behov (trygghet/respekt) som inte uppfyllts" },
             { id: "2", text: "2. Känsla: Uttrycka hur situationen kändes inombords utan att döma" }
           ],
           correct: ["1", "2", "3", "4"],
-          rewardText: "Katederns lönnfack öppnas med ett fjädrande ljud! Inuti ligger den tunga Klassrumsnyckeln."
+          rewardText: "Katederns lönnfack öppnas! Inuti ligger den tunga Klassrumsnyckeln."
         }
       },
       {
         id: 2,
         title: "Elevskåpens korridor",
-        subtitle: "Branddörren styrs med säkerhetskod. Läs sociogrammet på anslagstavlan först.",
+        subtitle: "Branddörren styrs med en säkerhetskod. Läs sociogrammet på anslagstavlan först.",
         doorLabel: "BRANDDÖRR",
         doorType: "keypad",
         doorCode: "8412",
@@ -94,7 +94,7 @@
         puzzlePrompt: "Skåp 14:s kodlås",
         clue: {
           title: "Analys: Formella regler vs Oskrivna normer",
-          text: "Skollagens regler är officiella, öppna och har som mål att skydda allas lika värde. Oskrivna normer är däremot tysta överenskommelser i elevgruppen som ofta upprätthålls genom rädsla för utanförskap. De tvingar elever att skratta med åt elaka skämt eller frysa ut andra för att inte själva bli måltavlor."
+          text: "Skollagens regler är officiella, kända och skyddar allas lika värde. Oskrivna normer är däremot tysta överenskommelser i elevgruppen som ofta upprätthålls genom rädsla för utanförskap. De tvingar elever att skratta med åt elaka skämt eller frysa ut andra för att inte själva bli måltavlor."
         },
         puzzle: {
           type: "categorize",
@@ -107,7 +107,7 @@
             { id: "p3", text: "Att avfärda sårande kommentarer med 'det var bara ett skämt' för att slippa ta ansvar", correct: "Klassens tysta norm" },
             { id: "p4", text: "Elever har lagstadgad rätt till trygghet och studiero under lektionstid", correct: "Skolans formella regel" }
           ],
-          rewardText: "Skåp 14 klickar upp! På insidan har vaktmästaren skrivit branddörrens kod: 8412."
+          rewardText: "Skåp 14 klickar upp! På insidan står vaktmästarens säkerhetskod till branddörren: 8412."
         }
       },
       {
@@ -118,10 +118,10 @@
         doorType: "padlock",
         keyItem: "Grindnyckeln",
         cluePrompt: "Taktiktavlan vid basketplanen",
-        puzzlePrompt: "Låst ryggsäck på rastbänken",
+        puzzlePrompt: "Låst ryggsäck på bänken",
         clue: {
           title: "Olweus mobbningsring i praktiken",
-          text: "Mobbning upprätthålls sällan av enbart förövaren. I Olweus mobbningsring spelar omgivningen en avgörande roll: 'Medlöpare' hejar på och förstärker kränkningen. 'Passiva åskådare' ser vad som sker men förblir tysta, vilket förövaren tolkar som ett tyst medhåll. 'Försvarare' är de få som aktivt bryter cirkeln genom att hämta vuxna eller ta den utsattas parti."
+          text: "Mobbning upprätthålls av omgivningens reaktioner. Medlöpare skrattar och filmar. Passiva åskådare ser vad som sker men är tysta, vilket mobbaren tolkar som medhåll. Försvarare är de som bryter cirkeln genom att hämta vuxna eller stötta den utsatta."
         },
         puzzle: {
           type: "categorize",
@@ -133,21 +133,21 @@
             { id: "o2", text: "Ser att någon blir knuffad, känner obehag i magen men tittar ner och låtsas inte se", correct: "Passiv åskådare" },
             { id: "o3", text: "Går direkt och säger till närmaste rastvärd så att situationen bryts säkert", correct: "Försvarare" }
           ],
-          rewardText: "Ryggsäckens kombinationslås klickar upp! Inuti sidofacket hittar du den tunga Grindnyckeln."
+          rewardText: "Ryggsäckens kombinationslås klickar upp! I sidofacket hittar du Grindnyckeln."
         }
       },
       {
         id: 4,
         title: "Skolbiblioteket",
-        subtitle: "Arkivdörren har 4 mässingshjul. Studera uppslagsboken i hyllan först.",
+        subtitle: "Det doftar trä och gamla böcker. Studera uppslagsboken i hyllan först.",
         doorLabel: "ARKIVDÖRR",
         doorType: "tumbler",
         doorCode: "KODS",
-        cluePrompt: "Boken om mikroaggressioner",
+        cluePrompt: "Den öppna uppslagsboken i hyllan",
         puzzlePrompt: "Lönnfacket med mässingsknoppen",
         clue: {
           title: "Analys: Dolda fördomar och nålstick",
-          text: "Mikroaggressioner är subtila, ofta vardagliga nålstick som inte nödvändigtvis uttrycks med öppet hat, men som bygger på underliggande stereotyper. De maskeras ofta som nyfikna frågor eller skämt och skapar en kumulativ känsla hos mottagaren av att alltid betraktas som en avvikare som inte hör till på riktigt."
+          text: "Mikroaggressioner är subtila vardagliga nålstick som inte nödvändigtvis uttrycks med öppet hat, men som bygger på stereotyper. De maskeras ofta som nyfikna frågor eller skämt och skapar en känsla hos mottagaren av att alltid betraktas som en avvikare som inte hör till på riktigt."
         },
         puzzle: {
           type: "multiSelect",
@@ -161,7 +161,7 @@
             { id: "m5", text: "Är en grundlagsskyddad åsikt som skolan inte får problematisera", correct: false }
           ],
           requiredCount: 3,
-          rewardText: "Lönnfacket i hyllan öppnas med ett klick! En pappersremsa visar kombinationen: K - O - D - S."
+          rewardText: "Lönnfacket i hyllan öppnas med ett fjädrande klick! En pappersremsa visar kombinationen till hjulen: K - O - D - S."
         }
       },
       {
@@ -175,7 +175,7 @@
         puzzlePrompt: "Administratörsterminalen",
         clue: {
           title: "Online Disinhibition Effect (Minskad självkontroll)",
-          text: "Forskningen om nätpsykologi visar att människors empati sjunker dramatiskt bakom en skärm. Detta beror främst på tre faktorer: 1. Avsaknad av ögonkontakt (vi ser inte personens smärta), 2. Upplevd anonymitet (man känner sig osynlig), och 3. Asynkron kommunikation (man slipper ta den direkta reaktionen ansikte mot ansikte)."
+          text: "Människors empati sjunker dramatiskt bakom en skärm. Det beror främst på tre faktorer: 1. Avsaknad av ögonkontakt (vi ser inte personens smärta), 2. Upplevd anonymitet (man känner sig osynlig), och 3. Tidsfördröjning (man slipper möta reaktionen direkt)."
         },
         puzzle: {
           type: "multiSelect",
@@ -203,7 +203,7 @@
         puzzlePrompt: "Dryckesautomatens panel",
         clue: {
           title: "Ekokammare & Ryktesspridning",
-          text: "En ekokammare skapas när information och rykten studsar i en sluten grupp utan att granskas. När elaka rykten sprids om en elevs familj eller privatliv eldas det på av bekräftelsejakt och delningar. Det enda sättet att punktera en ekokammare är att aktivt kräva källor och ställa kritiska motfrågor."
+          text: "En ekokammare skapas när information och rykten studsar i en sluten grupp utan att granskas. När elaka rykten sprids eldas det på av bekräftelsejakt och delningar. Det enda sättet att punktera en ekokammare är att aktivt kräva källor och ställa kritiska motfrågor."
         },
         puzzle: {
           type: "categorize",
@@ -216,7 +216,7 @@
             { id: "e3", text: "Att tyst anta att ett rykte stämmer bara för att flera i klassen upprepar det", correct: "Eldar på ryktet" },
             { id: "e4", text: "Vända sig direkt till personen det berör och visa respekt istället för att spekulera", correct: "Punkterar ekokammaren" }
           ],
-          rewardText: "KLONK! Dryckesautomaten matar ut en silvernyckel med brickan 'KÖKET' i returfacket!"
+          rewardText: "KLONK! Dryckesautomaten matar ut Köksnyckeln i returfacket!"
         }
       },
       {
@@ -230,7 +230,7 @@
         puzzlePrompt: "Låset på gymnastikplinten",
         clue: {
           title: "Jargong kontra Diskrimineringslagen",
-          text: "Idrott ska bygga på glädje och samarbete. Gränsen mellan lagpepp och sexism går där kommentarer nedvärderar eller begränsar elever utifrån deras kön. Uttalanden som 'var inte en sån kärring' eller att exkludera tjejer med hänvisning till fysik är inte 'tugg' – det är sexism som bryter mot likabehandlingsplanen."
+          text: "Gränsen mellan lagpepp och sexism går där kommentarer nedvärderar eller begränsar elever utifrån deras kön. Uttalanden som 'var inte en sån kärring' eller att exkludera tjejer med hänvisning till fysik är sexism som bryter mot likabehandlingsplanen."
         },
         puzzle: {
           type: "categorize",
@@ -257,7 +257,7 @@
         puzzlePrompt: "Kassaskrinet bakom monsteran",
         clue: {
           title: "Kompensatorisk likvärdighet vs Fusk",
-          text: "En vanlig fördom är att elever som får anpassningar (t.ex. eget rum vid prov eller talsyntes) 'fuskar' eller får orättvisa fördelar. Men skollagens princip om likvärdighet innebär att ge kompensatoriskt stöd utifrån individuella behov. Det handlar inte om att ge alla samma sak, utan om att jämna ut förutsättningarna så att alla har samma chans att visa sina kunskaper."
+          text: "Skollagens princip om likvärdighet innebär att ge kompensatoriskt stöd utifrån individuella behov. Det handlar inte om att alla ska göra exakt samma sak, utan om att ge varje elev rätt förutsättningar så att alla har samma chans att lyckas."
         },
         puzzle: {
           type: "categorize",
@@ -283,7 +283,7 @@
         puzzlePrompt: "Skrinet under pingisbordet",
         clue: {
           title: "Latané & Darleys fem steg för civilkurage",
-          text: "Forskningen om åskådareffekten visar att vi inte agerar slumpmässigt vid kränkningar. För att bryta tystnaden måste vi mentalt ta oss igenom fem precisa steg: 1. Upptäck händelsen, 2. Tolka den som en nödsituation, 3. Ta personligt ansvar (inte vänta på att någon annan ska göra det), 4. Välj metod för ingripande, och 5. Genomför handlingen."
+          text: "För att bryta tystnaden och ingripa måste vi mentalt ta oss igenom fem precisa steg: 1. Upptäck händelsen, 2. Tolka den som en nödsituation, 3. Ta personligt ansvar, 4. Välj metod för ingripande, och 5. Genomför handlingen."
         },
         puzzle: {
           type: "reorder",
@@ -297,7 +297,7 @@
             { id: "c4", text: "4. Välja den säkraste och mest effektiva metoden att ingripa på" }
           ],
           correct: ["c1", "c2", "c3", "c4", "c5"],
-          rewardText: "Skrinet under pingisbordet öppnas! En laminerad lapp visar koden till auladörren: 2026."
+          rewardText: "Skrinet under pingisbordet öppnas! Koden till auladörren är: 2026."
         }
       },
       {
@@ -308,10 +308,10 @@
         doorType: "tumbler",
         doorCode: "TRYG",
         cluePrompt: "Diplomet på rektorns vägg",
-        puzzlePrompt: "Pärmen på det massiva skrivbordet",
+        puzzlePrompt: "Pärmen på skrivbordet",
         clue: {
           title: "Den auktoritativa skolan: Ordning med omtanke",
-          text: "Framgångsrik skolforskning visar att trygga skolor varken är auktoritära (enbart hårda straff) eller tillåtande (låtgå-attityd). De är auktoritativa och vilar på fyra orubbliga pelare i samverkan: Värme (genuin omtanke om varje elev), Tydlighet (förutsägbara, rättvisa gränser), Relationer (förtroende mellan elever och vuxna) och Mod (att aldrig ignorera en kränkning)."
+          text: "Trygga skolor är auktoritativa och vilar på fyra orubbliga pelare i samverkan: Värme (genuin omtanke om varje elev), Tydlighet (förutsägbara, rättvisa gränser), Relationer (förtroende mellan elever och vuxna) och Mod (att aldrig ignorera en kränkning)."
         },
         puzzle: {
           type: "reorder",
@@ -337,12 +337,10 @@
       const [activeModal, setActiveModal] = useState(null); // 'clue', 'puzzle', 'doorLock', 'blocked'
       const [blockedMessage, setBlockedMessage] = useState("");
       
-      // Pusseltillstånd
       const [reorderList, setReorderList] = useState([]);
       const [categorizedItems, setCategorizedItems] = useState({});
       const [selectedOptions, setSelectedOptions] = useState(new Set());
       
-      // Dörrlåstillstånd
       const [keypadInput, setKeypadInput] = useState("");
       const [tumblerValues, setTumblerValues] = useState(["A", "A", "A", "A"]);
       const [isPadlockTurning, setIsPadlockTurning] = useState(false);
@@ -377,7 +375,7 @@
         initRoom(0);
       }, []);
 
-      // Spärrkontroller: Tvinga eleverna att läsa och arbeta i sekvens
+      // Spärrar för sekventiellt utforskande
       const handleTryOpenPuzzle = () => {
         if (!clueRead) {
           setBlockedMessage("Föremålet är låst! Du måste först undersöka och läsa ledtråden i rummet för att förstå vad som krävs för att lösa detta.");
@@ -462,7 +460,6 @@
         }
       };
 
-      // Dörrlåsfunktioner
       const handleTurnKeyInPadlock = () => {
         if (!inventory.has(room.keyItem)) {
           setErrorMsg(`Du saknar ${room.keyItem}! Lös pusslet i rummet först.`);
@@ -513,32 +510,436 @@
         }
       };
 
-      if (gameWon) {
-        return (
-          <div className="min-h-screen bg-[#06120e] flex items-center justify-center p-4">
-            <div className="bg-[#0c221a] border-2 border-amber-400 rounded-3xl p-10 max-w-xl text-center shadow-2xl">
-              <div className="w-24 h-24 mx-auto mb-6 bg-amber-400/20 rounded-full flex items-center justify-center border-2 border-amber-400 text-5xl">
-                🏆
-              </div>
-              <h1 className="text-3xl font-extrabold text-amber-400 mb-3 uppercase tracking-wider">Alla 10 rum avklarade!</h1>
-              <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                Ni har tagit er igenom alla skolans praktiska utmaningar, brutit destruktiva normer och visat hur ett genuint tryggt och inkluderande <strong>SKOLKLIMAT</strong> skapas varje dag!
-              </p>
-              <button 
-                onClick={() => { setCurrentRoomIndex(0); setInventory(new Set()); setGameWon(false); initRoom(0); }}
-                className="px-8 py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl transition-all shadow-lg hover:scale-105 uppercase tracking-wider"
-              >
-                Börja om från Rum 1
-              </button>
-            </div>
-          </div>
-        );
-      }
+      // ========================================================
+      // 10 UNIKA & DETALJERADE RUMSMILJÖER (SVG)
+      // ========================================================
+      const renderRoomIllustration = (id) => {
+        switch (id) {
+          case 1: // KLASSRUM 8B
+            return (
+              <g>
+                <rect x="0" y="0" width="800" height="330" fill="#1e293b" />
+                <rect x="0" y="330" width="800" height="170" fill="#451a03" />
+                <line x1="0" y1="330" x2="800" y2="330" stroke="#291404" strokeWidth="6" />
+
+                {/* Hängande klassrumslampor med ljuskäglor */}
+                <line x1="220" y1="0" x2="220" y2="45" stroke="#64748b" strokeWidth="2" />
+                <polygon points="200,45 240,45 230,60 210,60" fill="#f59e0b" />
+                <polygon points="160,330 280,330 230,60 210,60" fill="#fef08a" opacity="0.07" />
+
+                <line x1="480" y1="0" x2="480" y2="45" stroke="#64748b" strokeWidth="2" />
+                <polygon points="460,45 500,45 490,60 470,60" fill="#f59e0b" />
+                <polygon points="420,330 540,330 490,60 470,60" fill="#fef08a" opacity="0.07" />
+
+                {/* Whiteboard med lektionsanteckningar (Ledtråd) */}
+                <g className="cursor-pointer group" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
+                  <rect x="80" y="60" width="220" height="145" fill="#f8fafc" stroke="#94a3b8" strokeWidth="6" rx="6" className="group-hover:stroke-amber-400 transition-colors" />
+                  <rect x="90" y="70" width="200" height="125" fill="#ffffff" />
+                  <line x1="110" y1="95" x2="260" y2="95" stroke="#0284c7" strokeWidth="3" strokeLinecap="round" />
+                  <line x1="110" y1="120" x2="240" y2="120" stroke="#64748b" strokeWidth="2.5" />
+                  <line x1="110" y1="140" x2="210" y2="140" stroke="#64748b" strokeWidth="2.5" />
+                  <circle cx="260" cy="155" r="14" fill="#ef4444" opacity="0.85" />
+                  
+                  <rect x="90" y="172" width="200" height="23" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
+                  <text x="190" y="188" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ LEDTRÅD STUDERAD" : "1. KLICKA FÖR ATT LÄSA"}
+                  </text>
+                </g>
+
+                {/* Kateder med bänk & lönnfack (Pussel) */}
+                <g className="cursor-pointer group" onClick={handleTryOpenPuzzle}>
+                  <rect x="340" y="260" width="230" height="90" fill="#78350f" stroke="#451a03" strokeWidth="4" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
+                  <rect x="360" y="350" width="14" height="90" fill="#1e293b" />
+                  <rect x="536" y="350" width="14" height="90" fill="#1e293b" />
+                  <rect x="380" y="225" width="95" height="40" fill={clueRead ? "#cbd5e1" : "#475569"} stroke="#334155" strokeWidth="2" rx="3" />
+                  <polygon points="370,265 485,265 475,270 380,270" fill="#94a3b8" />
+                  
+                  <rect x="355" y="315" width="200" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#1e293b"} rx="3" />
+                  <text x="455" y="330" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">
+                    {puzzleSolved ? "✓ PUSSEL LÖST" : clueRead ? "2. LÖS UTMANINGEN" : "🔒 SPÄRRAD (LÄS LEDTRÅD FÖRST)"}
+                  </text>
+                </g>
+              </g>
+            );
+
+          case 2: // KORRIDOR MED SKÅP
+            return (
+              <g>
+                <rect x="0" y="0" width="800" height="340" fill="#334155" />
+                <rect x="0" y="340" width="800" height="160" fill="#475569" />
+                <line x1="0" y1="340" x2="800" y2="340" stroke="#1e293b" strokeWidth="6" />
+
+                {/* Anslagstavla med sociogram och post-its (Ledtråd) */}
+                <g className="cursor-pointer group" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
+                  <rect x="70" y="65" width="220" height="150" fill="#b45309" stroke="#78350f" strokeWidth="8" rx="6" className="group-hover:stroke-amber-400 transition-colors" />
+                  <rect x="85" y="80" width="190" height="120" fill="#d97706" />
+                  <rect x="100" y="95" width="45" height="45" fill="#fef08a" />
+                  <rect x="160" y="100" width="50" height="40" fill="#f87171" />
+                  <rect x="215" y="140" width="45" height="45" fill="#86efac" />
+                  
+                  <rect x="85" y="180" width="190" height="20" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
+                  <text x="180" y="194" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ SOCIOGRAM STUDERAT" : "1. LÄS ANSLAGSTAVLAN"}
+                  </text>
+                </g>
+
+                {/* Blå elevskåp (Pussel: Skåp 14) */}
+                <g className="cursor-pointer group" onClick={handleTryOpenPuzzle}>
+                  <rect x="330" y="70" width="240" height="270" fill="#0284c7" stroke="#0369a1" strokeWidth="6" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
+                  <line x1="410" y1="70" x2="410" y2="340" stroke="#0369a1" strokeWidth="4" />
+                  <line x1="490" y1="70" x2="490" y2="340" stroke="#0369a1" strokeWidth="4" />
+                  <rect x="430" y="90" width="40" height="16" fill="#075985" rx="2" />
+                  <text x="450" y="102" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">14</text>
+                  <circle cx="475" cy="180" r="6" fill="#facc15" />
+                  
+                  <rect x="350" y="295" width="200" height="24" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
+                  <text x="450" y="311" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {puzzleSolved ? "✓ SKÅP 14 ÖPPNAT" : clueRead ? "2. ÖPPNA SKÅP 14" : "🔒 LÅST (LÄS TAVLAN)"}
+                  </text>
+                </g>
+              </g>
+            );
+
+          case 3: // SKOLGÅRDEN
+            return (
+              <g>
+                <rect x="0" y="0" width="800" height="300" fill="#0f172a" />
+                <circle cx="680" cy="70" r="25" fill="#fef08a" opacity="0.9" />
+                <rect x="0" y="300" width="800" height="200" fill="#334155" />
+                <ellipse cx="360" cy="430" rx="160" ry="40" fill="none" stroke="#64748b" strokeWidth="3" strokeDasharray="10 10" />
+
+                {/* Basketställning & tavla (Ledtråd) */}
+                <g className="cursor-pointer group" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
+                  <rect x="180" y="70" width="10" height="270" fill="#64748b" />
+                  <rect x="130" y="60" width="110" height="75" fill="#ffffff" stroke="#dc2626" strokeWidth="5" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
+                  <line x1="165" y1="120" x2="205" y2="120" stroke="#f97316" strokeWidth="5" />
+                  <polygon points="170,120 185,150 200,120" fill="none" stroke="#ffffff" strokeWidth="2" />
+                  
+                  <rect x="110" y="145" width="150" height="20" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
+                  <text x="185" y="159" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ STUDERAD" : "1. LÄS TAKTIKTAVLAN"}
+                  </text>
+                </g>
+
+                {/* Rastbänk med ryggsäck (Pussel) */}
+                <g className="cursor-pointer group" onClick={handleTryOpenPuzzle}>
+                  <rect x="360" y="310" width="220" height="40" fill="#854d0e" stroke="#5c4033" strokeWidth="4" rx="3" className="group-hover:stroke-amber-400 transition-colors" />
+                  <rect x="380" y="350" width="12" height="60" fill="#1e293b" />
+                  <rect x="548" y="350" width="12" height="60" fill="#1e293b" />
+                  <rect x="450" y="270" width="45" height="45" fill="#2563eb" rx="8" />
+                  
+                  <rect x="370" y="360" width="200" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
+                  <text x="470" y="375" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {puzzleSolved ? "✓ VÄSKA ÖPPNAD" : clueRead ? "2. UNDERSÖK RYGGSÄCKEN" : "🔒 SPÄRRAD"}
+                  </text>
+                </g>
+              </g>
+            );
+
+          case 4: // SKOLBIBLIOTEKET (MYSIGT, FYLLT MED BÖCKER, BRASA & FÅTÖLJ)
+            return (
+              <g>
+                {/* Varma mörkröda biblioteksväggar och mörkt trägolv */}
+                <rect x="0" y="0" width="800" height="330" fill="#261712" />
+                <rect x="0" y="330" width="800" height="170" fill="#381e11" />
+                <line x1="0" y1="330" x2="800" y2="330" stroke="#221109" strokeWidth="6" />
+
+                {/* Träpaneler i golvet */}
+                <line x1="0" y1="375" x2="800" y2="375" stroke="#221109" strokeWidth="2" opacity="0.4" />
+                <line x1="0" y1="420" x2="800" y2="420" stroke="#221109" strokeWidth="2" opacity="0.4" />
+                <line x1="0" y1="465" x2="800" y2="465" stroke="#221109" strokeWidth="2" opacity="0.4" />
+
+                {/* Stor orientaliskt mönstrad mysmatta framför spisen */}
+                <ellipse cx="490" cy="420" rx="140" ry="45" fill="#7f1d1d" stroke="#b45309" strokeWidth="3" />
+                <ellipse cx="490" cy="420" rx="110" ry="32" fill="#991b1b" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="6 4" />
+
+                {/* Klassisk tegelspis med sprakande brasa som lyser upp rummet */}
+                <rect x="410" y="100" width="170" height="230" fill="#573024" stroke="#3b1d15" strokeWidth="6" rx="4" />
+                <path d="M 445 220 C 445 160, 545 160, 545 220 L 545 330 L 445 330 Z" fill="#140a07" />
+                <polygon points="495,225 465,320 525,320" fill="#ea580c" />
+                <polygon points="495,245 475,320 515,320" fill="#facc15" />
+                {/* Spiselkrans med klocka och levande ljus */}
+                <rect x="395" y="90" width="200" height="18" fill="#381e11" rx="3" />
+                <circle cx="495" cy="75" r="14" fill="#fef08a" stroke="#ca8a04" strokeWidth="2" />
+                <rect x="425" y="65" width="8" height="25" fill="#f8fafc" />
+                <circle cx="429" cy="60" r="4" fill="#f59e0b" />
+                <rect x="555" y="65" width="8" height="25" fill="#f8fafc" />
+                <circle cx="559" cy="60" r="4" fill="#f59e0b" />
+
+                {/* GIGANTISK BOKHYLLA (Vänster) PROPPFULL MED BÖCKER */}
+                <g className="cursor-pointer group" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
+                  <rect x="50" y="30" width="280" height="300" fill="#422216" stroke="#26130b" strokeWidth="8" rx="6" className="group-hover:stroke-amber-400 transition-colors" />
+                  
+                  {/* Hyllplan 1 */}
+                  <rect x="60" y="95" width="260" height="10" fill="#26130b" />
+                  <rect x="70" y="45" width="14" height="50" fill="#b91c1c" />
+                  <rect x="86" y="40" width="16" height="55" fill="#1d4ed8" />
+                  <rect x="104" y="48" width="12" height="47" fill="#ca8a04" />
+                  <rect x="118" y="42" width="18" height="53" fill="#15803d" />
+                  <rect x="138" y="50" width="14" height="45" fill="#7e22ce" />
+                  <rect x="154" y="40" width="20" height="55" fill="#c2410c" />
+                  <rect x="176" y="45" width="12" height="50" fill="#334155" />
+                  <rect x="190" y="43" width="16" height="52" fill="#047857" />
+                  <rect x="208" y="48" width="14" height="47" fill="#a16207" />
+                  <rect x="224" y="40" width="18" height="55" fill="#b91c1c" />
+                  <rect x="244" y="46" width="12" height="49" fill="#1e3a8a" />
+                  <rect x="258" y="42" width="16" height="53" fill="#0f766e" />
+                  <rect x="276" y="47" width="14" height="48" fill="#854d0e" />
+
+                  {/* Hyllplan 2 (Med den uppslagna boken) */}
+                  <rect x="60" y="165" width="260" height="10" fill="#26130b" />
+                  <rect x="70" y="110" width="16" height="55" fill="#475569" />
+                  <rect x="88" y="115" width="14" height="50" fill="#b45309" />
+                  <rect x="104" y="108" width="18" height="57" fill="#047857" />
+                  {/* Uppslagen bok som lyser varmt */}
+                  <polygon points="140,165 210,165 205,125 145,125" fill="#fef08a" stroke="#ca8a04" strokeWidth="2" />
+                  <line x1="175" y1="125" x2="175" y2="165" stroke="#a16207" strokeWidth="2" />
+                  <rect x="230" y="112" width="15" height="53" fill="#991b1b" />
+                  <rect x="247" y="118" width="14" height="47" fill="#1d4ed8" />
+                  <rect x="263" y="110" width="18" height="55" fill="#a16207" />
+
+                  {/* Hyllplan 3 */}
+                  <rect x="60" y="235" width="260" height="10" fill="#26130b" />
+                  <rect x="70" y="180" width="18" height="55" fill="#15803d" />
+                  <rect x="90" y="185" width="14" height="50" fill="#b91c1c" />
+                  <rect x="106" y="178" width="16" height="57" fill="#1e40af" />
+                  <rect x="124" y="182" width="14" height="53" fill="#a16207" />
+                  <rect x="140" y="188" width="12" height="47" fill="#334155" />
+                  <rect x="154" y="180" width="18" height="55" fill="#c2410c" />
+                  <rect x="174" y="184" width="15" height="51" fill="#0f766e" />
+                  <rect x="191" y="178" width="18" height="57" fill="#7e22ce" />
+                  <rect x="211" y="186" width="14" height="49" fill="#15803d" />
+                  <rect x="227" y="180" width="16" height="55" fill="#b45309" />
+                  <rect x="245" y="184" width="14" height="51" fill="#1d4ed8" />
+
+                  {/* Hyllplan 4 (Längst ner) */}
+                  <rect x="70" y="250" width="20" height="70" fill="#854d0e" />
+                  <rect x="92" y="255" width="18" height="65" fill="#991b1b" />
+                  <rect x="112" y="248" width="22" height="72" fill="#1e3a8a" />
+                  
+                  {/* Statusknapp på hyllan */}
+                  <rect x="65" y="280" width="250" height="26" fill={clueRead ? "#15803d" : "#1e1b4b"} rx="3" />
+                  <text x="190" y="297" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ BOKEN STUDERAD" : "1. LÄS UPPSLAGSBOKEN"}
+                  </text>
+                </g>
+
+                {/* MYSIGT LÄSBORD MED GRÖN MÄSSINGSLAMPA & LÖNNFACK (Pussel) */}
+                <g className="cursor-pointer group" onClick={handleTryOpenPuzzle}>
+                  {/* Massivt ekbord */}
+                  <rect x="360" y="280" width="260" height="75" fill="#5c2e17" stroke="#381a0b" strokeWidth="5" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
+                  <rect x="375" y="355" width="16" height="90" fill="#2b1308" />
+                  <rect x="585" y="355" width="16" height="90" fill="#2b1308" />
+
+                  {/* Grön bankir-lampa med mässingsfot */}
+                  <rect x="390" y="245" width="45" height="16" fill="#15803d" rx="3" />
+                  <line x1="412" y1="261" x2="412" y2="280" stroke="#ca8a04" strokeWidth="4" />
+                  <ellipse cx="412" cy="280" rx="12" ry="4" fill="#ca8a04" />
+                  {/* Ljuskägla från lampan */}
+                  <polygon points="380,310 445,310 425,261 400,261" fill="#fef08a" opacity="0.15" />
+
+                  {/* Antik jordglob på bordet */}
+                  <circle cx="590" cy="250" r="18" fill="#0284c7" />
+                  <path d="M 578 250 Q 590 240 602 250" stroke="#16a34a" strokeWidth="5" fill="none" />
+                  <line x1="590" y1="268" x2="590" y2="280" stroke="#ca8a04" strokeWidth="3" />
+
+                  {/* Det lilla lönnfacket med mässingsknopp (Pusslet) */}
+                  <rect x="450" y="295" width="100" height="45" fill="#3b1d10" stroke="#78350f" strokeWidth="3" rx="3" />
+                  <circle cx="500" cy="317" r="5" fill="#facc15" stroke="#a16207" strokeWidth="1.5" />
+                  <text x="500" y="310" fill="#facc15" fontSize="8" fontWeight="bold" textAnchor="middle">LÖNNFACK</text>
+                  
+                  <rect x="400" y="365" width="200" height="24" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#1c0d06"} rx="3" />
+                  <text x="500" y="381" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {puzzleSolved ? "✓ LÖNNFACK ÖPPNAT" : clueRead ? "2. ÖPPNA LÖNNFACKET" : "🔒 SPÄRRAT (LÄS BOKEN FÖRST)"}
+                  </text>
+                </g>
+              </g>
+            );
+
+          case 5: // DATASALEN
+            return (
+              <g>
+                <rect x="0" y="0" width="800" height="330" fill="#090d16" />
+                <rect x="0" y="330" width="800" height="170" fill="#1e293b" />
+                
+                {/* Skrivbord med datorer (Pussel) */}
+                <g className="cursor-pointer group" onClick={handleTryOpenPuzzle}>
+                  <rect x="130" y="220" width="260" height="110" fill="#334155" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
+                  <rect x="150" y="120" width="105" height="85" fill="#0f172a" stroke="#64748b" strokeWidth="4" rx="4" />
+                  <rect x="158" y="128" width="89" height="69" fill={puzzleSolved ? "#16a34a" : "#38bdf8"} opacity="0.9" />
+                  <rect x="270" y="120" width="95" height="80" fill="#0f172a" stroke="#64748b" strokeWidth="4" rx="4" />
+                  
+                  <rect x="145" y="280" width="230" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
+                  <text x="260" y="295" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {puzzleSolved ? "✓ TERMINAL UPPLÅST" : clueRead ? "2. LOGGA IN PÅ TERMINALEN" : "🔒 TERMINAL SPÄRRAD"}
+                  </text>
+                </g>
+
+                {/* Serverrack med systemlogg (Ledtråd) */}
+                <g className="cursor-pointer group" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
+                  <rect x="440" y="70" width="150" height="260" fill="#020617" stroke="#475569" strokeWidth="6" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
+                  <circle cx="470" cy="100" r="4" fill="#22c55e" />
+                  <circle cx="490" cy="100" r="4" fill="#ef4444" />
+                  <rect x="465" y="140" width="50" height="50" fill="#fef08a" />
+                  
+                  <rect x="445" y="240" width="140" height="22" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
+                  <text x="515" y="255" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ SYSTEMLOGG LÄST" : "1. LÄS SYSTEMLOGGEN"}
+                  </text>
+                </g>
+              </g>
+            );
+
+          case 6: // CAFETERIAN
+            return (
+              <g>
+                <rect x="0" y="0" width="800" height="330" fill="#f8fafc" />
+                <rect x="0" y="330" width="800" height="170" fill="#cbd5e1" />
+                
+                {/* Cafébord med skoltidning (Ledtråd) */}
+                <g className="cursor-pointer group" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
+                  <rect x="360" y="270" width="240" height="60" fill="#ffffff" stroke="#94a3b8" strokeWidth="4" rx="6" className="group-hover:stroke-amber-400 transition-colors" />
+                  <rect x="420" y="240" width="35" height="20" fill="#0f172a" rx="3" />
+                  <rect x="380" y="295" width="200" height="20" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
+                  <text x="480" y="309" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ ARTIKEL STUDERAD" : "1. LÄS SKOLTIDNINGEN"}
+                  </text>
+                </g>
+
+                {/* Läskautomat (Pussel) */}
+                <g className="cursor-pointer group" onClick={handleTryOpenPuzzle}>
+                  <rect x="110" y="70" width="190" height="260" fill="#e11d48" stroke="#be123c" strokeWidth="6" rx="6" className="group-hover:stroke-amber-400 transition-colors" />
+                  <rect x="130" y="90" width="150" height="110" fill="#0f172a" rx="4" />
+                  <rect x="130" y="240" width="150" height="45" fill="#1e293b" rx="4" />
+                  
+                  <rect x="125" y="295" width="160" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
+                  <text x="205" y="310" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {puzzleSolved ? "✓ AUTOMAT FIXAD" : clueRead ? "2. PROGRAMMERA AUTOMATEN" : "🔒 SPÄRRAD"}
+                  </text>
+                </g>
+              </g>
+            );
+
+          case 7: // IDROTTSHALLEN
+            return (
+              <g>
+                <rect x="0" y="0" width="800" height="300" fill="#0284c7" />
+                <rect x="0" y="300" width="800" height="200" fill="#f59e0b" />
+
+                {/* Taktiktavla (Ledtråd) */}
+                <g className="cursor-pointer group" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
+                  <rect x="420" y="50" width="190" height="230" fill="#ffffff" stroke="#d97706" strokeWidth="8" rx="6" className="group-hover:stroke-amber-400 transition-colors" />
+                  <rect x="435" y="235" width="160" height="22" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
+                  <text x="515" y="250" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ TAKTIKTAVLA LÄST" : "1. STUDERA TAKTIKTAVLAN"}
+                  </text>
+                </g>
+
+                {/* Plint i läder (Pussel) */}
+                <g className="cursor-pointer group" onClick={handleTryOpenPuzzle}>
+                  <rect x="170" y="320" width="220" height="50" fill="#b45309" stroke="#78350f" strokeWidth="4" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
+                  <circle cx="210" cy="295" r="18" fill="#ea580c" />
+                  
+                  <rect x="180" y="380" width="200" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
+                  <text x="280" y="395" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {puzzleSolved ? "✓ PLINT ÖPPNAD" : clueRead ? "2. ÖPPNA PLINTLÅSET" : "🔒 LÅST"}
+                  </text>
+                </g>
+              </g>
+            );
+
+          case 8: // KURATORN
+            return (
+              <g>
+                <rect x="0" y="0" width="800" height="320" fill="#fef3c7" />
+                <rect x="0" y="320" width="800" height="180" fill="#78350f" />
+
+                {/* Soffa med broschyr (Ledtråd) */}
+                <g className="cursor-pointer group" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
+                  <rect x="130" y="190" width="240" height="130" fill="#047857" stroke="#065f46" strokeWidth="6" rx="16" className="group-hover:stroke-amber-400 transition-colors" />
+                  <rect x="160" y="295" width="180" height="20" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
+                  <text x="250" y="309" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ BROSCHYR LÄST" : "1. LÄS BROSCHYREN"}
+                  </text>
+                </g>
+
+                {/* Krukväxt med skrin (Pussel) */}
+                <g className="cursor-pointer group" onClick={handleTryOpenPuzzle}>
+                  <polygon points="480,240 540,240 530,310 490,310" fill="#d97706" className="group-hover:stroke-amber-400 transition-colors" />
+                  <circle cx="510" cy="180" r="30" fill="#15803d" />
+                  <rect x="440" y="330" width="150" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
+                  <text x="515" y="345" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {puzzleSolved ? "✓ SKRIN ÖPPNAT" : clueRead ? "2. UNDERSÖK SKRINET" : "🔒 SPÄRRAT"}
+                  </text>
+                </g>
+              </g>
+            );
+
+          case 9: // UPPEHÅLLSRUMMET
+            return (
+              <g>
+                <rect x="0" y="0" width="800" height="310" fill="#1e1b4b" />
+                <rect x="0" y="310" width="800" height="190" fill="#312e81" />
+
+                {/* Affisch (Ledtråd) */}
+                <g className="cursor-pointer group" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
+                  <rect x="120" y="50" width="170" height="190" fill="#fbbf24" stroke="#d97706" strokeWidth="6" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
+                  <circle cx="205" cy="120" r="35" fill="#ef4444" />
+                  <rect x="135" y="205" width="140" height="20" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
+                  <text x="205" y="219" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ AFFISCH STUDERAD" : "1. LÄS AFFISCHEN"}
+                  </text>
+                </g>
+
+                {/* Pingisbord med skrin (Pussel) */}
+                <g className="cursor-pointer group" onClick={handleTryOpenPuzzle}>
+                  <rect x="330" y="260" width="280" height="60" fill="#15803d" stroke="#ffffff" strokeWidth="4" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
+                  <circle cx="430" cy="285" r="12" fill="#dc2626" />
+                  <rect x="380" y="340" width="180" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
+                  <text x="470" y="355" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {puzzleSolved ? "✓ SKRIN UPPLÅST" : clueRead ? "2. ÖPPNA SKRINET" : "🔒 SPÄRRAT"}
+                  </text>
+                </g>
+              </g>
+            );
+
+          case 10: // REKTORNS EXPEDITION
+            return (
+              <g>
+                <rect x="0" y="0" width="800" height="320" fill="#312e81" />
+                <rect x="0" y="320" width="800" height="180" fill="#451a03" />
+
+                {/* Diplom på väggen (Ledtråd) */}
+                <g className="cursor-pointer group" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
+                  <rect x="170" y="50" width="170" height="130" fill="#fef08a" stroke="#ca8a04" strokeWidth="8" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
+                  <circle cx="255" cy="100" r="25" fill="#eab308" />
+                  <rect x="185" y="145" width="140" height="20" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
+                  <text x="255" y="159" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ DIPLOM STUDERAT" : "1. LÄS DIPLOMET"}
+                  </text>
+                </g>
+
+                {/* Skrivbord med pärm (Pussel) */}
+                <g className="cursor-pointer group" onClick={handleTryOpenPuzzle}>
+                  <rect x="370" y="240" width="230" height="90" fill="#78350f" stroke="#451a03" strokeWidth="6" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
+                  <rect x="410" y="200" width="40" height="15" fill="#15803d" rx="3" />
+                  <rect x="400" y="295" width="170" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
+                  <text x="485" y="310" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {puzzleSolved ? "✓ PÄRM ÖPPNAD" : clueRead ? "2. LÖS SISTA PUSSLET" : "🔒 SPÄRRAD"}
+                  </text>
+                </g>
+              </g>
+            );
+
+          default:
+            return null;
+        }
+      };
 
       return (
         <div className="w-full max-w-5xl mx-auto flex flex-col justify-between">
           
-          {/* HEADER MED STATUS */}
+          {/* HEADER */}
           <header className="w-full mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-[#0d221b] p-4 rounded-2xl border border-[#194435] shadow-lg">
             <div>
               <div className="flex items-center gap-2">
@@ -551,7 +952,7 @@
               <p className="text-xs text-slate-300">{room.subtitle}</p>
             </div>
 
-            {/* Stegindikator */}
+            {/* Rumsindikator */}
             <div className="flex items-center gap-1.5 overflow-x-auto py-1">
               {ROOMS.map((r, idx) => (
                 <div 
@@ -575,65 +976,17 @@
             <div key={currentRoomIndex} className="w-full h-full animate-room-change">
               <svg viewBox="0 0 800 500" className="w-full h-full select-none">
                 
-                {/* Bakgrundsvägg i mörk färg & äkta trägolv */}
-                <rect x="0" y="0" width="800" height="330" fill="#1b2430" />
-                <rect x="0" y="330" width="800" height="170" fill="#3b2314" />
-                <line x1="0" y1="330" x2="800" y2="330" stroke="#24140a" strokeWidth="6" />
+                {/* 1. MÖBLER OCH RUMSBAKGRUND (UNIK FÖR VARJE RUM) */}
+                {renderRoomIllustration(room.id)}
 
-                {/* Golvplankor för djup */}
-                <line x1="0" y1="370" x2="800" y2="370" stroke="#24140a" strokeWidth="2" opacity="0.4" />
-                <line x1="0" y1="410" x2="800" y2="410" stroke="#24140a" strokeWidth="2" opacity="0.4" />
-                <line x1="0" y1="455" x2="800" y2="455" stroke="#24140a" strokeWidth="2" opacity="0.4" />
-
-                {/* Hängande industrilampor */}
-                <line x1="220" y1="0" x2="220" y2="45" stroke="#64748b" strokeWidth="2" />
-                <polygon points="200,45 240,45 230,60 210,60" fill="#f59e0b" />
-                <polygon points="160,330 280,330 230,60 210,60" fill="#fef08a" opacity="0.07" />
-
-                <line x1="480" y1="0" x2="480" y2="45" stroke="#64748b" strokeWidth="2" />
-                <polygon points="460,45 500,45 490,60 470,60" fill="#f59e0b" />
-                <polygon points="420,330 540,330 490,60 470,60" fill="#fef08a" opacity="0.07" />
-
-                {/* 1. LEDTRÅDSOBJEKTET (Vänster) */}
-                <g className="cursor-pointer group" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
-                  <rect x="80" y="60" width="220" height="145" fill="#f8fafc" stroke="#94a3b8" strokeWidth="6" rx="6" className="group-hover:stroke-amber-400 transition-colors" />
-                  <rect x="90" y="70" width="200" height="125" fill="#ffffff" />
-                  <line x1="110" y1="95" x2="260" y2="95" stroke="#0284c7" strokeWidth="3" strokeLinecap="round" />
-                  <line x1="110" y1="120" x2="240" y2="120" stroke="#64748b" strokeWidth="2.5" />
-                  <line x1="110" y1="140" x2="210" y2="140" stroke="#64748b" strokeWidth="2.5" />
-                  <circle cx="260" cy="155" r="14" fill="#ef4444" opacity="0.85" />
-                  
-                  {/* Statusindikator på tavlan */}
-                  <rect x="90" y="172" width="200" height="23" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
-                  <text x="190" y="188" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">
-                    {clueRead ? "✓ LEDTRÅD STUDERAD" : "1. KLICKA FÖR ATT LÄSA"}
-                  </text>
-                </g>
-
-                {/* 2. PUSSELOBJEKTET (Mitten) */}
-                <g className="cursor-pointer group" onClick={handleTryOpenPuzzle}>
-                  <rect x="340" y="260" width="230" height="90" fill="#78350f" stroke="#451a03" strokeWidth="4" rx="4" className="group-hover:stroke-amber-400 transition-colors" />
-                  <rect x="360" y="350" width="14" height="90" fill="#1e293b" />
-                  <rect x="536" y="350" width="14" height="90" fill="#1e293b" />
-                  {/* Pussel-objekt */}
-                  <rect x="380" y="225" width="95" height="40" fill={clueRead ? "#cbd5e1" : "#475569"} stroke="#334155" strokeWidth="2" rx="3" />
-                  <polygon points="370,265 485,265 475,270 380,270" fill="#94a3b8" />
-                  
-                  {/* Statusplakett */}
-                  <rect x="355" y="315" width="200" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#1e293b"} rx="3" />
-                  <text x="455" y="330" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">
-                    {puzzleSolved ? "✓ PUSSEL LÖST" : clueRead ? "2. LÖS UTMANINGEN" : "🔒 SPÄRRAD (LÄS LEDTRÅD FÖRST)"}
-                  </text>
-                </g>
-
-                {/* 3. DÖRREN OCH LÅSET (Höger) */}
+                {/* 2. DÖRREN OCH LÅSET LÄNGST TILL HÖGER */}
                 <g className="cursor-pointer group" onClick={handleTryOpenDoor}>
                   <rect x="640" y="70" width="120" height="290" fill="#0f172a" stroke="#334155" strokeWidth="6" rx="4" />
                   <rect x="650" y="80" width="100" height="270" fill={puzzleSolved ? "#15803d" : "#991b1b"} className="transition-colors group-hover:brightness-110" />
                   <rect x="660" y="50" width="80" height="22" fill="#dc2626" rx="3" />
                   <text x="700" y="65" fill="#ffffff" fontSize="10" fontWeight="black" textAnchor="middle">{room.doorLabel}</text>
                   
-                  {/* Lås-grafik på dörren */}
+                  {/* Låsets grafiska representation */}
                   {room.doorType === "padlock" && (
                     <g transform="translate(685, 190)">
                       <rect x="0" y="15" width="30" height="25" fill="#facc15" stroke="#b45309" strokeWidth="2" rx="4" />
@@ -673,7 +1026,6 @@
 
           {/* ================= HUD / STATUSPANEL I BOTTEN ================= */}
           <footer className="w-full mt-3 bg-[#0d221b] border border-[#194435] rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
-            {/* Vänster: Sekvens & Status */}
             <div className="flex items-center gap-3">
               <span className="w-9 h-9 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 flex items-center justify-center font-bold text-sm">
                 {!clueRead ? "1" : !puzzleSolved ? "2" : "3"}
@@ -682,15 +1034,14 @@
                 <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Aktuellt steg</span>
                 <p className="text-sm font-semibold text-white">
                   {!clueRead 
-                    ? `Undersök ${room.cluePrompt} i rummet` 
+                    ? `Undersök ${room.cluePrompt}` 
                     : !puzzleSolved 
-                      ? `Lös pusslet vid ${room.puzzlePrompt}` 
+                      ? `Lös utmaningen vid ${room.puzzlePrompt}` 
                       : `Gå till ${room.doorLabel} och öppna låset!`}
                 </p>
               </div>
             </div>
 
-            {/* Mitten: Föremål */}
             <div className="flex items-center gap-2 bg-[#081813] px-4 py-2 rounded-xl border border-[#15392d]">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Ficka:</span>
               {inventory.size === 0 ? (
@@ -704,7 +1055,6 @@
               )}
             </div>
 
-            {/* Höger: Snabbknappar */}
             <div className="flex gap-2">
               <button 
                 onClick={() => { setClueRead(true); setActiveModal('clue'); }}
@@ -727,18 +1077,17 @@
             </div>
           </footer>
 
-          {/* ================= MODALER / INTERAKTIVA PUSSEL & LÅS ================= */}
+          {/* ================= MODALER ================= */}
           {activeModal && (
             <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
               <div className="bg-[#0c221a] border-2 border-[#1a4233] rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl animate-room-change">
                 
-                {/* Header */}
                 <div className="px-5 py-3.5 bg-[#081813] border-b border-[#1a4233] flex justify-between items-center">
                   <h3 className="font-bold text-white text-sm flex items-center gap-2">
                     {activeModal === 'clue' && '🔍 ' + room.clue.title}
                     {activeModal === 'puzzle' && '⚙️ ' + room.puzzle.title}
                     {activeModal === 'doorLock' && '🔐 ' + room.doorLabel + ' – Låsmekanism'}
-                    {activeModal === 'blocked' && '🔒 Åtkomst nekad'}
+                    {activeModal === 'blocked' && '🔒 Åtkomst spärrad'}
                   </h3>
                   <button onClick={() => setActiveModal(null)} className="text-slate-300 hover:text-white text-xs px-2.5 py-1 bg-white/10 hover:bg-white/20 rounded-md">
                     Stäng X
@@ -747,7 +1096,6 @@
 
                 <div className="p-6 max-h-[80vh] overflow-y-auto">
                   
-                  {/* MODAL: BLOCKERAD ÅTGÄRD */}
                   {activeModal === 'blocked' && (
                     <div className="text-center py-3">
                       <div className="w-14 h-14 bg-rose-500/20 text-rose-400 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl border border-rose-500/40">
@@ -760,12 +1108,11 @@
                         onClick={() => { setClueRead(true); setActiveModal('clue'); }}
                         className="w-full py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl transition-all shadow-md uppercase tracking-wider text-xs"
                       >
-                        Öppna och läs ledtråden nu ➔
+                        Öppna och studera ledtråden ➔
                       </button>
                     </div>
                   )}
 
-                  {/* MODAL 1: AUTENTISK LEDTRÅDSLAPP MED RÖD KARTNÅL */}
                   {activeModal === 'clue' && (
                     <div>
                       <div className="relative bg-[#fbf7ee] text-slate-800 p-6 rounded-xl shadow-lg border border-amber-200 mb-5">
@@ -783,7 +1130,6 @@
                     </div>
                   )}
 
-                  {/* MODAL 2: DET PRAKTISKA PUSSLET */}
                   {activeModal === 'puzzle' && (
                     <div>
                       {!puzzleSolved ? (
@@ -792,7 +1138,6 @@
                             {room.puzzle.instruction}
                           </p>
 
-                          {/* REORDER */}
                           {room.puzzle.type === "reorder" && (
                             <div className="space-y-2 mb-4">
                               {reorderList.map((it, idx) => (
@@ -825,7 +1170,6 @@
                             </div>
                           )}
 
-                          {/* CATEGORIZE */}
                           {room.puzzle.type === "categorize" && (
                             <div className="space-y-2.5 mb-4">
                               {room.puzzle.items.map(it => (
@@ -848,7 +1192,6 @@
                             </div>
                           )}
 
-                          {/* MULTISELECT */}
                           {room.puzzle.type === "multiSelect" && (
                             <div className="space-y-2 mb-4">
                               {room.puzzle.options.map(opt => {
@@ -904,11 +1247,9 @@
                     </div>
                   )}
 
-                  {/* MODAL 3: DEN INTERAKTIVA LÅSMEKANIKEN */}
                   {activeModal === 'doorLock' && (
                     <div className="text-center">
                       
-                      {/* TYP 1: FYSISKT MÄSSINGSHÄNGLÅS */}
                       {room.doorType === "padlock" && (
                         <div>
                           <div className="w-28 h-36 mx-auto mb-5 relative">
@@ -946,7 +1287,6 @@
                         </div>
                       )}
 
-                      {/* TYP 2: DIGITAL KNAPPSATS (KEYPAD) */}
                       {room.doorType === "keypad" && (
                         <div>
                           <div className="bg-[#0284c7]/20 border border-[#0284c7] p-3 rounded-xl mb-4 font-mono text-2xl tracking-widest text-[#38bdf8] flex justify-center items-center h-12 shadow-inner">
@@ -977,7 +1317,6 @@
                         </div>
                       )}
 
-                      {/* TYP 3: ROTERANDE MÄSSINGSHJUL (TUMBLER) */}
                       {room.doorType === "tumbler" && (
                         <div>
                           <p className="text-xs text-slate-300 mb-3">
