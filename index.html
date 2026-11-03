@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Olweus & HateLess Escape Room</title>
+  <title>Skolans Escape Room – Från Mobbning till Trygghet</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts: Caveat för anteckningsboken -->
+  <!-- Google Fonts: Inter och Caveat för handskriven anteckningsbok -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fredoka:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   
   <!-- React & Babel via CDN -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -19,348 +19,402 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-handwriting { font-family: 'Caveat', cursive; }
+    .font-game { font-family: 'Fredoka', cursive, sans-serif; }
+
+    /* Sims Plumbob animation */
+    @keyframes plumbob-float {
+      0%, 100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 6px #22c55e); }
+      50% { transform: translateY(-8px) scale(1.08); filter: drop-shadow(0 0 12px #4ade80); }
+    }
+    .sims-plumbob {
+      animation: plumbob-float 2s ease-in-out infinite;
+      transform-origin: center;
+    }
+
     @keyframes fade-in-up {
-      0% { opacity: 0; transform: translateY(10px); }
+      0% { opacity: 0; transform: translateY(8px); }
       100% { opacity: 1; transform: translateY(0); }
     }
-    .animate-fade-in-up { animation: fade-in-up 0.4s ease-out forwards; }
-    
-    @keyframes fade-in {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .animate-fade-in { animation: fade-in 0.2s ease-out; }
-    
-    @keyframes scale-up {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    .animate-scale-up { animation: scale-up 0.2s ease-out; }
-    
+    .animate-note { animation: fade-in-up 0.3s ease-out forwards; }
+
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
     }
-    .animate-shake { animation: shake 0.3s ease-in-out; }
+    .animate-shake { animation: shake 0.4s ease-in-out; }
   </style>
 </head>
-<body class="bg-[#091b17] text-white">
+<body class="bg-[#121c24] text-slate-100 min-h-screen">
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useEffect } = React;
 
-    const LEVELS = [
+    // --- 10 SKOLMILJÖER MED SPECIFIKA TEMAN & LEDTRÅDAR ---
+    const ROOMS = [
       {
-        title: "Rum 1: Ordens gräns",
+        id: 1,
+        title: "Klassrum 8B",
+        subtitle: "Lektionen är slut, men dörren har låsts automatiskt.",
+        themeColor: { wallL: "#8fa39a", wallR: "#7c9389", floor: "#c2b49d" },
         items: {
-          tree: {
-            title: "Kunskapens gran",
-            text: "En lapp hänger på en gren: 'Lagen skyddar vår rätt att tycka, men inte vår rätt att trycka ner.'",
-            notebook: "Granen: Rätten att tycka ger inte rätt att trycka ner."
+          itemA: {
+            name: "Whiteboarden",
+            pos: { x: 260, y: 150 },
+            title: "Text på whiteboarden",
+            text: "Läraren har skrivit: 'Vi har rätt att uttrycka våra tankar i en demokrati, men skollagen förbjuder alla former av kränkningar.'",
+            note: "Whiteboard: Yttrandefrihet ger oss rätt att tycka, men inte rätt att trycka ner andra."
           },
-          note: {
-            title: "Lappen på väggen",
-            text: "Får man verkligen säga exakt vad som helst? Vissa tror att yttrandefrihet betyder att man får vara elak.",
-            notebook: "Lappen: Yttrandefrihet är inte en ursäkt för att vara elak."
-          },
-          desk: {
-            title: "Lådan i bänken",
-            text: "Ett inristat budskap: 'När åsikter övergår till påhopp, exkludering och fientlighet, då har det blivit... vadå?'",
-            notebook: "Bänken: Vad kallas det när åsikter övergår till fientlighet?"
+          itemB: {
+            name: "Bänklocket",
+            pos: { x: 420, y: 320 },
+            title: "Anteckning på bänken",
+            text: "På en kladdig lapp i bänken står det: 'När elaka ord sprids om någons bakgrund, tro eller vem man är... då är det inte längre bara en åsikt.'",
+            note: "Bänken: När ord kränker någons identitet räknas det som hat."
           }
         },
-        lock: {
-          title: "Skåpets hänglås",
-          question: "Vad är det som sätter gränsen för yttrandefriheten när ord används för att skada och kränka?",
-          answer: ["HAT", "HATRETORIK"],
-          hint: "Ordet har tre bokstäver och är motsatsen till kärlek."
+        door: {
+          name: "Klassrumsdörren",
+          pos: { x: 740, y: 180 },
+          question: "Vad är det som bryter mot yttrandefriheten när ord används för att förödmjuka och hota grupper eller individer?",
+          answers: ["HAT", "HATRETORIK"],
+          hint: "Tre bokstäver. Motsatsen till kärlek."
         }
       },
       {
-        title: "Rum 2: De osynliga reglerna",
+        id: 2,
+        title: "Elevskåpskorridoren",
+        subtitle: "De blå skåpen ekar tomt. Hitta koden till branddörren.",
+        themeColor: { wallL: "#e2e8f0", wallR: "#cbd5e1", floor: "#64748b" },
         items: {
-          tree: {
-            title: "Kunskapens gran",
-            text: "Trädet är klippt i en perfekt fyrkant. Alla grenar som stack ut har kapats för att passa in.",
-            notebook: "Granen: Beskuren för att passa in i en perfekt form."
+          itemA: {
+            name: "Anslagstavlan",
+            pos: { x: 280, y: 130 },
+            title: "Modepostern",
+            text: "Någon har skrivit på lappen: 'Alla måste ha de här skorna annars blir man dissad.' Vem har bestämt det egentligen?",
+            note: "Anslagstavlan: Det finns oskrivna regler om vad som anses vara 'rätt' och fel."
           },
-          note: {
-            title: "Lappen på väggen",
-            text: "'Du kan inte ha de där kläderna!' 'Sådär kan man inte bete sig!' Vem är det egentligen som bestämmer vad som är rätt och fel i klassrummet?",
-            notebook: "Lappen: Vem bestämmer egentligen vad som är 'normalt'?"
-          },
-          desk: {
-            title: "Bänken",
-            text: "De oskrivna reglerna i en grupp styr ofta hur vi klär oss och pratar. Om de är negativa kan de leda till utanförskap.",
-            notebook: "Bänken: Oskrivna regler i gruppen kan skapa utanförskap."
+          itemB: {
+            name: "Skåp 42",
+            pos: { x: 580, y: 220 },
+            title: "Insidan av skåp 42",
+            text: "En bok om sociologi ligger uppslagen: 'De osynliga regler som styr hur vi förväntas se ut, klä oss och bete oss kallas...'",
+            note: "Skåpet: Osynliga regler som styr vad som ses som 'normalt'."
           }
         },
-        lock: {
-          title: "Skåpets hänglås",
-          question: "Vad kallas dessa osynliga regler och förväntningar på hur vi 'ska' vara?",
-          answer: ["NORMER", "NORM"],
-          hint: "Börjar på N. Att vara 'normal' kommer från detta ord."
+        door: {
+          name: "Branddörren",
+          pos: { x: 800, y: 230 },
+          question: "Vad kallas de oskrivna reglerna och förväntningarna i en grupp som avgör vad som anses 'normalt'?",
+          answers: ["NORMER", "NORM"],
+          hint: "Börjar på N. Ordet 'normal' härstammar från detta."
         }
       },
       {
-        title: "Rum 3: Att våga agera",
+        id: 3,
+        title: "Skolgården",
+        subtitle: "Grinden till elevuppehållet är reglad. Undersök skolgården.",
+        themeColor: { wallL: "#94a3b8", wallR: "#64748b", floor: "#475569" },
         items: {
-          tree: {
-            title: "Kunskapens gran",
-            text: "Det krävs starka rötter för att stå emot stormen när alla andra blåser åt samma håll.",
-            notebook: "Granen: Man måste våga stå emot när alla andra följer strömmen."
+          itemA: {
+            name: "Basketkorgen",
+            pos: { x: 250, y: 160 },
+            title: "Basketplanen",
+            text: "Ett gäng stod här igår. Två bråkade medan åtta andra bara stod runt omkring med sina mobiler och filmade i tystnad.",
+            note: "Basketplanen: De flesta stod bara och tittade på utan att säga ifrån."
           },
-          note: {
-            title: "Lappen på väggen",
-            text: "Du ser någon bli retad. Det är obekvämt och läskigt att lägga sig i. Men att säga ifrån kan rädda någons hela dag.",
-            notebook: "Lappen: Det är läskigt att säga ifrån, men det gör stor skillnad."
-          },
-          window: {
-            title: "Fönstret",
-            text: "Utanför ser du en elev som hjälper en annan att plocka upp utspridda böcker, trots att andra skrattar.",
-            notebook: "Fönstret: Modet att hjälpa till trots andras blickar."
+          itemB: {
+            name: "Rastbänken",
+            pos: { x: 500, y: 340 },
+            title: "Inristat i bänken",
+            text: "Olweus forskning visar: De som varken hejar på eller säger ifrån kallas för en specifik roll i mobbningsringen.",
+            note: "Bänken: Den passiva rollen i mobbningsringen som bara ser på."
           }
         },
-        lock: {
-          title: "Skåpets hänglås",
-          question: "Vad kallas modet att stå upp för någon annan och göra det rätta, även när det innebär en personlig risk?",
-          answer: ["CIVILKURAGE"],
-          hint: "Ett långt ord som slutar på '-kurage' (som betyder mod)."
+        door: {
+          name: "Skolgårdsgrinden",
+          pos: { x: 770, y: 220 },
+          question: "I Olweus mobbningsring – vad kallas den person som ser kränkningar ske men inte agerar?",
+          answers: ["ÅSKÅDARE", "ÅSKÅDAREN"],
+          hint: "Samma ord som för publiken som sitter och tittar på en match."
         }
       },
       {
-        title: "Rum 4: Dolda fördomar",
+        id: 4,
+        title: "Skolbiblioteket",
+        subtitle: "Lugnet här döljer viktiga ledtrådar bland böckerna.",
+        themeColor: { wallL: "#334155", wallR: "#1e293b", floor: "#78350f" },
         items: {
-          note: {
-            title: "Lappen på väggen",
-            text: "Exempel på kommentarer: 'Vad bra svenska du pratar!' eller 'Får jag känna på ditt hår?'",
-            notebook: "Lappen: Kommentarer som verkar snälla men egentligen exkluderar."
+          itemA: {
+            name: "Ordboken på bordet",
+            pos: { x: 400, y: 290 },
+            title: "Uppslagen ordbok",
+            text: "'Men vad bra svenska du pratar!' eller 'Får jag ta på ditt hår?' — Subtila kommentarer som påminner om att man ses som annorlunda.",
+            note: "Bordet: Vardagliga kommentarer som verkar oskyldiga men som bottnar i fördomar."
           },
-          desk: {
-            title: "Bänken",
-            text: "Detta är subtila, vardagliga kränkningar som ofta sker omedvetet, men som påminner mottagaren om att hen är 'annorlunda'.",
-            notebook: "Bänken: Subtila, omedvetna handlingar eller kommentarer."
+          itemB: {
+            name: "Bokhyllan",
+            pos: { x: 260, y: 140 },
+            title: "Samhällshyllan",
+            text: "Boken 'Dold Rasism': Dessa små vardagliga nålstick kallas för mikro...",
+            note: "Bokhyllan: Kallas mikro-nånting (ett litet fientligt påhopp)."
           }
         },
-        lock: {
-          title: "Skåpets hänglås",
-          question: "Vad kallas dessa vardagliga, dolda kommentarer som bottnar i fördomar och rasism?",
-          answer: ["MIKROAGGRESSION", "MIKROAGGRESSIONER"],
-          hint: "Ett ord sammansatt av 'mikro' (liten) och ett ord för fientlighet/angrepp."
+        door: {
+          name: "Bibliotekariens dörr",
+          pos: { x: 740, y: 180 },
+          question: "Vad kallas dessa små, vardagliga kränkningar som ofta sker omedvetet utifrån fördomar?",
+          answers: ["MIKROAGGRESSION", "MIKROAGGRESSIONER"],
+          hint: "Sammansatt av 'mikro' (liten) och aggression (fientligt angrepp)."
         }
       },
       {
-        title: "Rum 5: Bakom skärmen",
+        id: 5,
+        title: "Datasalen (IKT-salen)",
+        subtitle: "Skärmarna lyser blått. Knäck lösenordet på modemet.",
+        themeColor: { wallL: "#1e293b", wallR: "#0f172a", floor: "#334155" },
         items: {
-          tree: {
-            title: "Kunskapens gran",
-            text: "På nätet försvinner kroppsspråk, ögonkontakt och tonfall. Det gör det svårare att känna empati.",
-            notebook: "Granen: Brist på ögonkontakt online minskar empatin."
+          itemA: {
+            name: "Datorskärm 1",
+            pos: { x: 320, y: 210 },
+            title: "Öppen Discord-chatt",
+            text: "'Varför skriver folk så mycket grövre saker i chatten än vad de någonsin vågar säga i korridoren?'",
+            note: "Skärm 1: Folk vågar vräka ur sig värre saker bakom skärmar."
           },
-          note: {
-            title: "Lappen på väggen",
-            text: "Många skriver saker i en gruppchatt eller på TikTok som de aldrig skulle våga säga ansikte mot ansikte.",
-            notebook: "Lappen: Man vågar säga värre saker bakom en skärm."
-          },
-          window: {
-            title: "Fönstret",
-            text: "Fenomenet kallas 'Online Disinhibition Effect'. Det betyder att våra vanliga spärrar försvinner.",
-            notebook: "Fönstret: Våra sociala spärrar försvinner på nätet."
+          itemB: {
+            name: "Tangentbordet",
+            pos: { x: 510, y: 310 },
+            title: "Post-it vid tangentbordet",
+            text: "Psykologibegrepp: 'Online Disinhibition Effect'. Skärmen skapar en falsk känsla av distans vilket leder till minskad...",
+            note: "Tangentbordet: Bristen på fysisk kontakt minskar vår förmåga att tygla oss."
           }
         },
-        lock: {
-          title: "Skåpets hänglås",
-          question: "Vad är det vi får 'minskad' av när vi gömmer oss bakom en skärm och känner oss anonyma?",
-          answer: ["SJÄLVKONTROLL", "SJÄLVKONTROLLEN"],
-          hint: "Förmågan att styra över sina egna impulser. Minskad..."
+        door: {
+          name: "Serverskåpet",
+          pos: { x: 740, y: 180 },
+          question: "Vad är det vi får 'minskad' av när vi gömmer oss bakom en skärm och inte ser mottagarens ansikte?",
+          answers: ["SJÄLVKONTROLL", "SJÄLVKONTROLLEN"],
+          hint: "Förmågan att styra över sina egna impulser och ord."
         }
       },
       {
-        title: "Rum 6: Isolering på nätet",
+        id: 6,
+        title: "Skolcafeterian",
+        subtitle: "Här samlas alla. Hitta koden till personalköket.",
+        themeColor: { wallL: "#f1f5f9", wallR: "#e2e8f0", floor: "#b91c1c" },
         items: {
-          desk: {
-            title: "Datorn på bänken",
-            text: "Algoritmerna visar dig bara videos och inlägg från personer som redan tycker exakt som du.",
-            notebook: "Datorn: Algoritmer matar dig bara med det du redan gillar."
+          itemA: {
+            name: "Bord 3",
+            pos: { x: 360, y: 280 },
+            title: "Kvarlämnad mobil",
+            text: "TikTok-flödet visar exakt samma typ av videor om och om igen. Algoritmen visar bara det användaren redan gillar.",
+            note: "Cafébordet: Algoritmerna stänger in oss med likasinnade åsikter."
           },
-          note: {
-            title: "Lappen på väggen",
-            text: "När ingen säger emot i gruppen, blir hatiska åsikter plötsligt normaliserade. Ni hör bara era egna röster studsa tillbaka.",
-            notebook: "Lappen: Utan motstånd normaliseras hatiska åsikter."
+          itemB: {
+            name: "Dryckesautomaten",
+            pos: { x: 570, y: 170 },
+            title: "Lapp på automaten",
+            text: "När en grupp bara hör sina egna åsikter upprepas utan mothugg kallas det för en eko...",
+            note: "Automaten: Ett slutet rum där åsikter bara studsar runt."
           }
         },
-        lock: {
-          title: "Skåpets hänglås",
-          question: "Vad kallas det fenomen där åsikter förstärks för att man bara pratar med likasinnade utan att släppa in andra perspektiv?",
-          answer: ["EKOKAMMARE", "FILTERBUBBLA", "FILTERBUBBLOR", "EKOKAMRAR"],
-          hint: "Ett rum där ljudet studsar tillbaka, eller en bubbla av filter."
+        door: {
+          name: "Köksdörren",
+          pos: { x: 770, y: 190 },
+          question: "Vad kallas fenomenet där människor bara tar del av åsikter som liknar deras egna, som i en bubbla?",
+          answers: ["EKOKAMMARE", "FILTERBUBBLA", "EKOKAMRAR", "FILTERBUBBLOR"],
+          hint: "Ett rum där ljudet ekar tillbaka, eller en bubbla av filter."
         }
       },
       {
-        title: "Rum 7: Det passiva medhållet",
+        id: 7,
+        title: "Idrottens omklädningsrum",
+        subtitle: "Hård jargong har lämnat spår. Lås upp materialförrådet.",
+        themeColor: { wallL: "#0284c7", wallR: "#0369a1", floor: "#0f766e" },
         items: {
-          tree: {
-            title: "Kunskapens gran",
-            text: "Olweus pratar om olika roller vid mobbning. Vissa initierar, vissa försvarar...",
-            notebook: "Granen: Mobbning handlar om olika roller i en grupp."
+          itemA: {
+            name: "Omklädningsbänken",
+            pos: { x: 380, y: 310 },
+            title: "Kladd på träbänken",
+            text: "'Tjejer kan ändå inte lira basket' och 'Bete dig inte som en tjej!'. Ord som begränsar hur man får vara.",
+            note: "Bänken: Kommentarer som dömer och förminskar utifrån kön."
           },
-          note: {
-            title: "Lappen på väggen",
-            text: "Många står bara runt omkring och tittar på. De skrattar kanske inte med, men de säger inte heller ifrån.",
-            notebook: "Lappen: Många ser på utan att göra något alls."
-          },
-          window: {
-            title: "Fönstret",
-            text: "Att inte göra någonting är också ett val. Det ger mobbaren tyst medhåll och makt.",
-            notebook: "Fönstret: Att vara tyst är att ge passivt medhåll."
+          itemB: {
+            name: "Taktiktavlan",
+            pos: { x: 260, y: 140 },
+            title: "Lärarens anteckning",
+            text: "Diskrimineringslagen kap 1: Behandling som är sämre eller kränkande med koppling till kön kallas...",
+            note: "Tavlan: Kränkningar eller fördomar på grund av någons kön."
           }
         },
-        lock: {
-          title: "Skåpets hänglås",
-          question: "I mobbningsringen (enligt Olweus), vad kallas den roll som bara ser på utan att ingripa?",
-          answer: ["ÅSKÅDARE", "ÅSKÅDAREN"],
-          hint: "Samma ord som för publiken på en teater eller fotbollsmatch."
+        door: {
+          name: "Bollförrådet",
+          pos: { x: 740, y: 180 },
+          question: "Vad kallas fördomar, orättvisor eller kränkningar som baseras på personers kön?",
+          answers: ["SEXISM"],
+          hint: "Börjar på S och handlar om könsdiskriminering."
         }
       },
       {
-        title: "Rum 8: Vem får vara vem?",
+        id: 8,
+        title: "Elevhälsans rum",
+        subtitle: "En plats för stöd och omtanke. Lås upp arkivet.",
+        themeColor: { wallL: "#dcfce7", wallR: "#bbf7d0", floor: "#854d0e" },
         items: {
-          note: {
-            title: "Lappen på väggen",
-            text: "Kommentarer som 'Det där är för tjejer' eller 'Killar gör inte sånt'.",
-            notebook: "Lappen: Förväntningar baserade på vilket kön man har."
+          itemA: {
+            name: "Broschyrstället",
+            pos: { x: 270, y: 170 },
+            title: "Broschyren 'Allas Rätt'",
+            text: "Vissa personer behöver aldrig oroa sig för att bli trakasserade för sin hudfärg, religion eller läggning.",
+            note: "Broschyren: Vissa föds med fördelar de inte ens tänker på."
           },
-          desk: {
-            title: "Bänken",
-            text: "Att begränsa någon, eller behandla någon sämre och orättvist på grund av deras kön, bryter mot skollagen.",
-            notebook: "Bänken: Diskriminering och orättvisor på grund av kön."
+          itemB: {
+            name: "Skrivbordet",
+            pos: { x: 480, y: 290 },
+            title: "Kuratorns anteckning",
+            text: "Att ha ett osynligt försprång och slippa diskriminering kallas för att besitta...",
+            note: "Skrivbordet: Osynliga fördelar och förmåner i vardagen."
           }
         },
-        lock: {
-          title: "Skåpets hänglås",
-          question: "Vad kallas denna form av hat, fördomar och diskriminering?",
-          answer: ["SEXISM"],
-          hint: "Börjar på S och handlar om orättvisor mellan könen."
+        door: {
+          name: "Arkivskåpet",
+          pos: { x: 740, y: 180 },
+          question: "Vad kallas de fördelar eller försprång som personer i majoritetsgrupper ofta tar för givna?",
+          answers: ["PRIVILEGIER", "PRIVILEGIUM"],
+          hint: "Börjar på P. Innebär särskilda förmåner eller fördelar."
         }
       },
       {
-        title: "Rum 9: Osynliga fördelar",
+        id: 9,
+        title: "Uppehållsrummet",
+        subtitle: "Här syns klassens gemenskap. Lås upp dörren till aulan.",
+        themeColor: { wallL: "#f59e0b", wallR: "#d97706", floor: "#1e293b" },
         items: {
-          note: {
-            title: "Lappen på väggen",
-            text: "Att slippa bli ifrågasatt för sin religion. Att alltid hitta plåster i sin egen hudfärg. Att slippa oroa sig för rasism.",
-            notebook: "Lappen: Vissa fördelar märker man inte ens att man har."
+          itemA: {
+            name: "Soffan",
+            pos: { x: 380, y: 310 },
+            title: "Brev i soffan",
+            text: "'Tack för att du sa ifrån när de garvade åt mig igår. Jag vågade inte själv.'",
+            note: "Soffan: Det krävs mod för att stå upp för någon annan."
           },
-          tree: {
-            title: "Kunskapens gran",
-            text: "Vissa grupper utsätts för mycket hat och diskriminering. Det betyder att de som slipper detta har ett försprång i samhället.",
-            notebook: "Granen: Att slippa diskriminering ger ett ofrivilligt försprång."
+          itemB: {
+            name: "Affischen",
+            pos: { x: 260, y: 140 },
+            title: "Affisch mot mobbning",
+            text: "Att våga agera och säga ifrån när någon behandlas illa – även om det känns läskigt – kallas...",
+            note: "Affischen: Modet att göra rätt trots risk för eget obehag."
           }
         },
-        lock: {
-          title: "Skåpets hänglås",
-          question: "Vad kallas dessa osynliga fördelar och förmåner som vissa har i samhället?",
-          answer: ["PRIVILEGIER", "PRIVILEGIUM"],
-          hint: "Börjar på P. Innebär en särskild fördel eller rättighet."
+        door: {
+          name: "Auladörren",
+          pos: { x: 740, y: 180 },
+          question: "Vad kallas förmågan och modet att stå upp för andra när något känns orättvist?",
+          answers: ["CIVILKURAGE"],
+          hint: "Ett sammansatt ord som slutar på -kurage (mod)."
         }
       },
       {
-        title: "Rum 10: Målet med allt",
+        id: 10,
+        title: "Rektorns expedition",
+        subtitle: "Det sista låset! Lås upp skolans framtida vision.",
+        themeColor: { wallL: "#1e3a8a", wallR: "#172554", floor: "#713f12" },
         items: {
-          note: {
-            title: "Lappen på väggen",
-            text: "När vi har ordning med omtanke, tydliga regler och bygger varma relationer mellan lärare och elever...",
-            notebook: "Lappen: Ordning, omtanke och varma relationer..."
+          itemA: {
+            name: "Diplomet på väggen",
+            pos: { x: 280, y: 130 },
+            title: "Guldplaketten",
+            text: "'En skola där alla känner sig trygga, där lärare och elever har varma relationer och tydliga regler.'",
+            note: "Väggen: Trygghet och studiero skapas tillsammans varje dag."
           },
-          window: {
-            title: "Fönstret",
-            text: "När vi vågar agera vid kränkningar, visar civilkurage och skapar gemenskap på rasterna...",
-            notebook: "Fönstret: ...samt gemenskap och mod att agera..."
-          },
-          desk: {
-            title: "Bänken",
-            text: "Då mår alla bättre. Risken för mobbning minskar drastiskt och eleverna lär sig mycket mer.",
-            notebook: "Bänken: ...leder till att alla mår och presterar bättre."
+          itemB: {
+            name: "Rektorns pärm",
+            pos: { x: 450, y: 280 },
+            title: "Trygghetsplanen",
+            text: "Målet med Olweus och HateLess är att skapa en inkluderande och varm stämning i hela skolan. Ett gott...",
+            note: "Skrivbordet: Slutmålet med allt trygghetsarbete: skolans stämning."
           }
         },
-        lock: {
-          title: "Skåpets hänglås",
-          question: "Vad är det vi tillsammans har skapat och förbättrat (som hela HateLess och Olweus-arbetet syftar till)? Ett bra...",
-          answer: ["SKOLKLIMAT", "SKOLMILJÖ"],
-          hint: "Ett sammansatt ord: Skol + [det ord som brukar handla om väder, men här handlar om stämningen]."
+        door: {
+          name: "Kassaskåpet",
+          pos: { x: 740, y: 170 },
+          question: "Vad är det vi har byggt upp och stärkt genom alla dessa steg? Ett tryggt och inkluderande...",
+          answers: ["SKOLKLIMAT", "SKOLMILJÖ"],
+          hint: "Sammansatt ord: Skol + ordet som annars handlar om väder och temperatur."
         }
       }
     ];
 
-    function EscapeRoomApp() {
-      const [currentLevel, setCurrentLevel] = useState(0);
+    function SimsSchoolEscape() {
+      const [currentRoomIndex, setCurrentRoomIndex] = useState(0);
       const [discoveredItems, setDiscoveredItems] = useState(new Set());
-      const [activeModal, setActiveModal] = useState(null);
-      const [passwordInput, setPasswordInput] = useState("");
+      const [activeModal, setActiveModal] = useState(null); // 'itemA', 'itemB', 'door'
+      const [inputCode, setInputCode] = useState("");
       const [errorMsg, setErrorMsg] = useState("");
       const [showHint, setShowHint] = useState(false);
       const [gameWon, setGameWon] = useState(false);
 
-      const level = LEVELS[currentLevel];
+      const room = ROOMS[currentRoomIndex];
 
-      const handleItemClick = (itemId) => {
-        if (itemId !== 'lock') {
-          const newDiscovered = new Set(discoveredItems);
-          newDiscovered.add(itemId);
-          setDiscoveredItems(newDiscovered);
+      const handleItemClick = (type) => {
+        if (type !== 'door') {
+          const updated = new Set(discoveredItems);
+          updated.add(type);
+          setDiscoveredItems(updated);
         }
-        setActiveModal(itemId);
+        setActiveModal(type);
         setErrorMsg("");
         setShowHint(false);
       };
 
       const handleCloseModal = () => {
         setActiveModal(null);
-        setPasswordInput("");
+        setInputCode("");
         setErrorMsg("");
       };
 
-      const handlePasswordSubmit = (e) => {
+      const handleUnlock = (e) => {
         e.preventDefault();
-        const normalizedInput = passwordInput.trim().toUpperCase();
-        if (level.lock.answer.includes(normalizedInput)) {
-          if (currentLevel < LEVELS.length - 1) {
-            setCurrentLevel(currentLevel + 1);
+        const cleaned = inputCode.trim().toUpperCase();
+        if (room.door.answers.includes(cleaned)) {
+          if (currentRoomIndex < ROOMS.length - 1) {
+            // Gå till nästa rum
+            setCurrentRoomIndex(prev => prev + 1);
             setDiscoveredItems(new Set());
             setActiveModal(null);
-            setPasswordInput("");
+            setInputCode("");
             setErrorMsg("");
-            setShowHint(false);
           } else {
             setGameWon(true);
           }
         } else {
-          setErrorMsg("Fel kod. Försök igen!");
+          setErrorMsg("Fel kod! Läs ledtrådarna i anteckningsboken noga.");
         }
       };
 
       if (gameWon) {
         return (
-          <div className="min-h-screen bg-[#091b17] flex items-center justify-center p-4 font-sans">
-            <div className="bg-[#0f2e24] border border-[#2a6851] rounded-2xl p-8 max-w-2xl text-center text-white shadow-2xl">
-              <h1 className="text-4xl font-bold mb-4 text-[#4deeea]">Grattis! Du knäckte alla koder!</h1>
-              <p className="text-xl mb-6">
-                Genom att lära dig om normer, civilkurage, nätetik och hur vi bemöter hat 
-                har du låst upp verktygen för att skapa ett fantastiskt och tryggt <strong>SKOLKLIMAT</strong>.
-              </p>
-              <div className="mb-8">
-                <svg viewBox="0 0 100 100" className="w-32 h-32 mx-auto">
-                  <circle cx="50" cy="50" r="45" fill="#eab308" />
-                  <path d="M 30 50 L 45 65 L 75 35" fill="none" stroke="#091b17" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+          <div className="min-h-screen bg-[#0d161d] flex items-center justify-center p-4">
+            <div className="bg-[#172533] border-2 border-emerald-500 rounded-3xl p-8 max-w-xl text-center shadow-2xl">
+              <div className="w-20 h-20 mx-auto mb-4">
+                <svg viewBox="0 0 100 100" className="w-full h-full sims-plumbob">
+                  <polygon points="50,5 85,50 50,95 15,50" fill="#22c55e" stroke="#15803d" strokeWidth="3" />
+                  <polygon points="50,5 50,95 15,50" fill="#4ade80" opacity="0.6" />
                 </svg>
               </div>
+              <h1 className="text-3xl font-extrabold text-emerald-400 mb-3 font-game">UPPDRAG SLUTFÖRT!</h1>
+              <p className="text-slate-300 text-lg mb-6 leading-relaxed">
+                Ni tog er igenom alla skolans 10 utmaningar och visade hur man bemöter fördomar, visar civilkurage och skapar ett äkta inkluderande <strong>SKOLKLIMAT</strong>!
+              </p>
               <button 
-                onClick={() => { setGameWon(false); setCurrentLevel(0); setDiscoveredItems(new Set()); }}
-                className="px-6 py-3 bg-[#eab308] text-[#091b17] font-bold rounded-lg hover:bg-yellow-400 transition-colors"
+                onClick={() => { setCurrentRoomIndex(0); setDiscoveredItems(new Set()); setGameWon(false); }}
+                className="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-all shadow-lg hover:scale-105"
               >
-                Spela igen
+                Börja om från Rum 1
               </button>
             </div>
           </div>
@@ -368,232 +422,384 @@
       }
 
       return (
-        <div className="min-h-screen bg-[#091b17] flex flex-col items-center justify-center p-4 font-sans overflow-hidden relative">
-          <div className="w-full max-w-5xl z-10">
-            <div className="mb-4 text-[#a3d9c9]">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-green-400">Nivå {currentLevel + 1} av {LEVELS.length}</h2>
-              <h1 className="text-3xl font-bold text-white">{level.title}</h1>
-              <p className="text-sm mt-1 opacity-80">Klicka på de lysande föremålen i rummet för att undersöka dem.</p>
+        <div className="min-h-screen flex flex-col items-center justify-between p-4 max-w-6xl mx-auto">
+          
+          {/* HEADER: Karta & Rumsindikator */}
+          <header className="w-full mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-[#172533]/80 backdrop-blur p-4 rounded-2xl border border-slate-700/50">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  RUM {currentRoomIndex + 1} AV {ROOMS.length}
+                </span>
+                <span className="text-xs text-slate-400">Sims-Edition</span>
+              </div>
+              <h1 className="text-2xl font-black text-white font-game mt-0.5">{room.title}</h1>
+              <p className="text-xs text-slate-300">{room.subtitle}</p>
             </div>
 
-            {/* HUVUDSCEN */}
-            <div className="relative w-full aspect-video bg-[#2c1d11] rounded-2xl overflow-hidden border-[6px] border-[#163a2d] shadow-2xl shadow-black/50">
-              <div className="absolute inset-0 flex flex-col">
-                <div className="h-2/3 bg-[#3d2b1f] relative">
-                  <svg className="absolute top-0 w-full h-16 pointer-events-none" viewBox="0 0 1000 100" preserveAspectRatio="none">
-                    <path d="M 0 20 Q 125 60 250 20 T 500 20 T 750 20 T 1000 20" fill="none" stroke="#222" strokeWidth="3" />
-                    {[50, 150, 250, 350, 450, 550, 650, 750, 850, 950].map((cx, i) => (
-                      <circle key={i} cx={cx} cy={cx % 200 === 50 ? 40 : 20} r="8" fill={['#ef4444', '#3b82f6', '#eab308', '#22c55e'][i % 4]} className="animate-pulse" />
-                    ))}
-                  </svg>
+            {/* Rums-tracker (10 rutor) */}
+            <div className="flex items-center gap-1.5 overflow-x-auto py-1">
+              {ROOMS.map((r, idx) => (
+                <div 
+                  key={r.id} 
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
+                    idx === currentRoomIndex 
+                      ? 'bg-emerald-500 text-slate-950 scale-110 shadow-md shadow-emerald-500/30 font-black ring-2 ring-emerald-300' 
+                      : idx < currentRoomIndex 
+                        ? 'bg-emerald-900/60 text-emerald-300 border border-emerald-700/50' 
+                        : 'bg-slate-800 text-slate-500 border border-slate-700'
+                  }`}
+                >
+                  {idx + 1}
                 </div>
-                <div className="h-1/3 bg-[#24170e]"></div>
-              </div>
-
-              {/* Fönster */}
-              <div 
-                onClick={() => level.items.window && handleItemClick('window')}
-                className={`absolute top-[15%] left-[40%] w-[20%] h-[40%] transition-transform duration-300 ${level.items.window ? 'cursor-pointer hover:scale-105 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'opacity-80'}`}
-              >
-                <svg viewBox="0 0 200 200" className="w-full h-full">
-                  <rect x="0" y="0" width="200" height="200" fill="#5c4033" rx="10" />
-                  <rect x="10" y="10" width="85" height="85" fill="#0f172a" />
-                  <rect x="105" y="10" width="85" height="85" fill="#0f172a" />
-                  <rect x="10" y="105" width="85" height="85" fill="#0f172a" />
-                  <rect x="105" y="105" width="85" height="85" fill="#0f172a" />
-                  <path d="M 140 40 A 25 25 0 1 0 170 70 A 30 30 0 1 1 140 40" fill="#fef08a" />
-                  <circle cx="30" cy="50" r="2" fill="white" />
-                  <circle cx="60" cy="30" r="3" fill="white" />
-                  <circle cx="150" cy="140" r="2" fill="white" />
-                  <circle cx="40" cy="160" r="2.5" fill="white" />
-                </svg>
-                {level.items.window && !discoveredItems.has('window') && (
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-ping opacity-75"></div>
-                )}
-              </div>
-
-              {/* Lappen på väggen */}
-              <div 
-                onClick={() => level.items.note && handleItemClick('note')}
-                className={`absolute top-[20%] left-[20%] w-[12%] h-[25%] transition-transform duration-300 ${level.items.note ? 'cursor-pointer hover:scale-110 drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] hover:rotate-3' : 'opacity-50'} rotate-[-5deg]`}
-              >
-                <svg viewBox="0 0 100 120" className="w-full h-full">
-                  <rect x="0" y="0" width="100" height="120" fill="#fdf5e6" stroke="#d1d5db" strokeWidth="2" />
-                  <circle cx="50" cy="10" r="4" fill="#ef4444" />
-                  <line x1="15" y1="30" x2="85" y2="30" stroke="#cbd5e1" strokeWidth="2" />
-                  <line x1="15" y1="50" x2="85" y2="50" stroke="#cbd5e1" strokeWidth="2" />
-                  <line x1="15" y1="70" x2="70" y2="70" stroke="#cbd5e1" strokeWidth="2" />
-                  <line x1="15" y1="90" x2="80" y2="90" stroke="#cbd5e1" strokeWidth="2" />
-                </svg>
-                {level.items.note && !discoveredItems.has('note') && (
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-ping opacity-75"></div>
-                )}
-              </div>
-
-              {/* Granen */}
-              <div 
-                onClick={() => level.items.tree && handleItemClick('tree')}
-                className={`absolute bottom-[10%] left-[5%] w-[25%] h-[60%] transition-transform duration-300 ${level.items.tree ? 'cursor-pointer hover:scale-105 drop-shadow-[0_0_20px_rgba(34,197,94,0.3)]' : 'opacity-90'}`}
-              >
-                <svg viewBox="0 0 200 300" className="w-full h-full">
-                  <rect x="85" y="240" width="30" height="50" fill="#5c4033" />
-                  <polygon points="100,30 40,120 160,120" fill="#15803d" />
-                  <polygon points="100,90 20,200 180,200" fill="#166534" />
-                  <polygon points="100,160 0,270 200,270" fill="#14532d" />
-                  <polygon points="100,10 105,25 120,25 108,35 112,50 100,40 88,50 92,35 80,25 95,25" fill="#facc15" />
-                  <circle cx="100" cy="150" r="8" fill="#3b82f6" />
-                  <circle cx="60" cy="220" r="8" fill="#ef4444" />
-                  <circle cx="140" cy="240" r="8" fill="#eab308" />
-                  <circle cx="130" cy="110" r="6" fill="#a855f7" />
-                </svg>
-                {level.items.tree && !discoveredItems.has('tree') && (
-                  <div className="absolute top-[20%] right-[20%] w-6 h-6 bg-red-500 rounded-full animate-ping opacity-75"></div>
-                )}
-              </div>
-
-              {/* Bänken */}
-              <div 
-                onClick={() => level.items.desk && handleItemClick('desk')}
-                className={`absolute bottom-[10%] left-[30%] w-[40%] h-[35%] transition-transform duration-300 ${level.items.desk ? 'cursor-pointer hover:scale-105 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'opacity-90'}`}
-              >
-                <svg viewBox="0 0 400 200" className="w-full h-full">
-                  <rect x="20" y="100" width="20" height="100" fill="#291a10" />
-                  <rect x="360" y="100" width="20" height="100" fill="#291a10" />
-                  <rect x="0" y="80" width="400" height="30" fill="#8b5a2b" rx="5" />
-                  <rect x="100" y="110" width="200" height="50" fill="#6b4423" />
-                  <rect x="180" y="125" width="40" height="10" fill="#b45309" rx="5" />
-                  <rect x="130" y="50" width="80" height="30" fill="#b91c1c" />
-                  <rect x="165" y="40" width="10" height="40" fill="#facc15" />
-                  <rect x="130" y="60" width="80" height="10" fill="#facc15" />
-                  <rect x="250" y="65" width="40" height="15" fill="#047857" rx="2" />
-                </svg>
-                {level.items.desk && !discoveredItems.has('desk') && (
-                  <div className="absolute top-[20%] right-[40%] w-6 h-6 bg-red-500 rounded-full animate-ping opacity-75"></div>
-                )}
-              </div>
-
-              {/* Låsta Skåpet */}
-              <div 
-                onClick={() => handleItemClick('lock')}
-                className="absolute bottom-[10%] right-[10%] w-[15%] h-[60%] cursor-pointer transition-transform duration-300 hover:scale-105 drop-shadow-[0_0_25px_rgba(234,179,8,0.4)]"
-              >
-                <svg viewBox="0 0 150 400" className="w-full h-full">
-                  <rect x="0" y="0" width="150" height="400" fill="#991b1b" rx="5" />
-                  <rect x="10" y="10" width="130" height="380" fill="#7f1d1d" rx="2" />
-                  <rect x="30" y="30" width="90" height="20" fill="#ef4444" rx="2" />
-                  <text x="75" y="44" fill="white" fontSize="12" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">SKOLAN</text>
-                  <path d="M 50 160 C 50 120, 100 120, 100 160" fill="none" stroke="#d4d4d8" strokeWidth="15" strokeLinecap="round" />
-                  <rect x="40" y="160" width="70" height="60" fill="#eab308" rx="8" />
-                  <line x1="55" y1="180" x2="55" y2="200" stroke="#a16207" strokeWidth="4" />
-                  <line x1="75" y1="180" x2="75" y2="200" stroke="#a16207" strokeWidth="4" />
-                  <line x1="95" y1="180" x2="95" y2="200" stroke="#a16207" strokeWidth="4" />
-                </svg>
-                <div className="absolute top-[45%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-yellow-400 rounded-full animate-ping opacity-60 pointer-events-none"></div>
-              </div>
+              ))}
             </div>
+          </header>
 
-            {/* BOTTENPANELER */}
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2 bg-[#fdf5e6] rounded-xl p-5 shadow-lg relative min-h-[150px]">
-                <div className="absolute top-0 left-8 w-px h-full bg-red-400 opacity-50"></div>
-                <h3 className="text-xl font-bold text-gray-800 mb-3 ml-12 uppercase tracking-widest border-b-2 border-gray-300 pb-1">Anteckningsboken</h3>
-                <ul className="ml-12 list-decimal pl-4" style={{ fontFamily: "'Caveat', cursive", fontSize: '1.4rem', lineHeight: '1.5', color: '#1f2937' }}>
-                  {discoveredItems.size === 0 && (
-                    <li className="opacity-50 list-none -ml-4">Undersök rummet. Klicka på sakerna för att samla ledtrådar...</li>
-                  )}
-                  {Array.from(discoveredItems).map((itemId) => (
-                    <li key={itemId} className="mb-2 text-[#0f172a] leading-tight animate-fade-in-up">
-                      {level.items[itemId].notebook}
+          {/* ================= DEN ISOMETRISKA SCENEN (SIMS-RUMMET) ================= */}
+          <main className="w-full relative aspect-[16/9] max-h-[520px] bg-[#0c141a] rounded-3xl overflow-hidden border-4 border-slate-800 shadow-2xl">
+            
+            <svg viewBox="0 0 1000 560" className="w-full h-full select-none">
+              <defs>
+                {/* Sims Plumbob Symbol */}
+                <g id="plumbob-icon" className="sims-plumbob cursor-pointer">
+                  <polygon points="0,-22 12,0 0,22 -12,0" fill="#22c55e" stroke="#15803d" strokeWidth="2" />
+                  <polygon points="0,-22 0,22 -12,0" fill="#4ade80" opacity="0.6" />
+                  <polygon points="0,-22 12,0 0,22" fill="#86efac" opacity="0.2" />
+                </g>
+
+                <linearGradient id="wallLGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor={room.themeColor.wallL} stopOpacity="0.95" />
+                  <stop offset="100%" stopColor={room.themeColor.wallL} stopOpacity="0.75" />
+                </linearGradient>
+
+                <linearGradient id="wallRGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor={room.themeColor.wallR} stopOpacity="0.95" />
+                  <stop offset="100%" stopColor={room.themeColor.wallR} stopOpacity="0.75" />
+                </linearGradient>
+
+                {/* Golvmönster (Isometriskt rutmönster) */}
+                <pattern id="floorTiles" width="40" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(0)">
+                  <path d="M 0 10 L 20 0 L 40 10 L 20 20 Z" fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
+                </pattern>
+              </defs>
+
+              {/* RUMMETS VÄGGAR OCH GOLV (GENOMSKUREN ISOMETRISK VY) */}
+              {/* Vänster vägg */}
+              <polygon points="120,60 500,140 500,380 120,300" fill="url(#wallLGrad)" stroke="#1e293b" strokeWidth="3" />
+              {/* Höger vägg */}
+              <polygon points="500,140 880,60 880,300 500,380" fill="url(#wallRGrad)" stroke="#1e293b" strokeWidth="3" />
+              {/* Golv */}
+              <polygon points="120,300 500,380 880,300 500,520" fill={room.themeColor.floor} stroke="#1e293b" strokeWidth="4" />
+              {/* Golv-textur */}
+              <polygon points="120,300 500,380 880,300 500,520" fill="url(#floorTiles)" />
+
+              {/* Sockellister för mer Sims-känsla */}
+              <polyline points="120,300 500,380 880,300" fill="none" stroke="#0f172a" strokeWidth="6" opacity="0.4" />
+
+              {/* ================= MÖBLER BASERAT PÅ RUMMET ================= */}
+              
+              {/* RUM 1: Klassrummet */}
+              {room.id === 1 && (
+                <g>
+                  {/* Whiteboard på vänster vägg */}
+                  <polygon points="180,110 380,150 380,240 180,200" fill="#f8fafc" stroke="#64748b" strokeWidth="4" />
+                  <polygon points="185,115 375,153 375,235 185,197" fill="#ffffff" />
+                  <line x1="200" y1="140" x2="350" y2="170" stroke="#0284c7" strokeWidth="3" />
+                  <line x1="200" y1="160" x2="330" y2="185" stroke="#475569" strokeWidth="2" />
+
+                  {/* Bänk i förgrunden */}
+                  <g className="cursor-pointer" onClick={() => handleItemClick('itemB')}>
+                    <polygon points="340,320 480,350 440,390 300,360" fill="#d97706" stroke="#92400e" strokeWidth="2" />
+                    <line x1="340" y1="320" x2="340" y2="390" stroke="#334155" strokeWidth="4" />
+                    <line x1="480" y1="350" x2="480" y2="420" stroke="#334155" strokeWidth="4" />
+                    <line x1="440" y1="390" x2="440" y2="450" stroke="#334155" strokeWidth="4" />
+                    <line x1="300" y1="360" x2="300" y2="430" stroke="#334155" strokeWidth="4" />
+                    {/* Anteckningsbok på bänken */}
+                    <polygon points="360,345 400,355 390,370 350,360" fill="#fef08a" stroke="#ca8a04" strokeWidth="1" />
+                  </g>
+                </g>
+              )}
+
+              {/* RUM 2: Korridoren */}
+              {room.id === 2 && (
+                <g>
+                  {/* Rad med skåp på högra väggen */}
+                  <polygon points="530,220 700,165 700,320 530,375" fill="#0284c7" stroke="#0369a1" strokeWidth="3" />
+                  <line x1="585" y1="202" x2="585" y2="357" stroke="#075985" strokeWidth="2" />
+                  <line x1="640" y1="184" x2="640" y2="339" stroke="#075985" strokeWidth="2" />
+                  {/* Skåpventilations-galler */}
+                  <circle cx="560" cy="245" r="4" fill="#38bdf8" />
+                  <circle cx="615" cy="227" r="4" fill="#38bdf8" />
+                  <circle cx="670" cy="209" r="4" fill="#38bdf8" />
+
+                  {/* Anslagstavla på vänster vägg */}
+                  <polygon points="200,120 360,150 360,230 200,200" fill="#b45309" stroke="#78350f" strokeWidth="5" />
+                  <polygon points="208,126 352,153 352,224 208,197" fill="#fde68a" />
+                </g>
+              )}
+
+              {/* RUM 3: Skolgården */}
+              {room.id === 3 && (
+                <g>
+                  {/* Basketkorg på vänster staket/vägg */}
+                  <line x1="220" y1="260" x2="220" y2="120" stroke="#64748b" strokeWidth="8" />
+                  <rect x="200" y="100" width="60" height="40" fill="#ffffff" stroke="#ef4444" strokeWidth="3" />
+                  <rect x="215" y="115" width="30" height="20" fill="none" stroke="#ef4444" strokeWidth="2" />
+                  {/* Korg */}
+                  <ellipse cx="230" cy="140" rx="15" ry="6" fill="none" stroke="#f97316" strokeWidth="3" />
+                  <path d="M 215 140 L 225 160 L 235 160 L 245 140" fill="none" stroke="#ffffff" strokeWidth="1.5" />
+
+                  {/* Rastbänk */}
+                  <polygon points="400,340 560,370 540,400 380,370" fill="#78350f" stroke="#451a03" strokeWidth="2" />
+                  <polygon points="400,330 560,360 560,370 400,340" fill="#92400e" />
+                </g>
+              )}
+
+              {/* RUM 4: Biblioteket */}
+              {room.id === 4 && (
+                <g>
+                  {/* Stor bokhylla på vänstra väggen */}
+                  <polygon points="180,100 340,130 340,290 180,260" fill="#451a03" stroke="#270d02" strokeWidth="3" />
+                  {/* Hyllplan och böcker */}
+                  <polygon points="190,140 330,165 330,175 190,150" fill="#78350f" />
+                  <polygon points="190,190 330,215 330,225 190,200" fill="#78350f" />
+                  {/* Färgade böcker */}
+                  <rect x="210" y="152" width="12" height="30" fill="#dc2626" />
+                  <rect x="225" y="155" width="10" height="27" fill="#2563eb" />
+                  <rect x="238" y="158" width="14" height="24" fill="#16a34a" />
+                  <rect x="260" y="162" width="12" height="28" fill="#eab308" />
+
+                  {/* Studiebord med lampa */}
+                  <polygon points="340,300 480,330 440,380 300,350" fill="#78350f" stroke="#451a03" strokeWidth="2" />
+                  {/* Bordslampa */}
+                  <ellipse cx="380" cy="305" rx="10" ry="5" fill="#ca8a04" />
+                  <line x1="380" y1="305" x2="380" y2="280" stroke="#ca8a04" strokeWidth="3" />
+                  <polygon points="365,280 395,280 390,265 370,265" fill="#15803d" />
+                </g>
+              )}
+
+              {/* RUM 5: Datasalen */}
+              {room.id === 5 && (
+                <g>
+                  {/* Datorskrivbord & skärmar */}
+                  <polygon points="260,220 460,260 420,320 220,280" fill="#475569" stroke="#1e293b" strokeWidth="3" />
+                  {/* Datorskärm 1 */}
+                  <polygon points="280,200 330,210 330,240 280,230" fill="#0284c7" stroke="#0f172a" strokeWidth="2" />
+                  <line x1="305" y1="235" x2="305" y2="245" stroke="#334155" strokeWidth="4" />
+                  {/* Datorskärm 2 */}
+                  <polygon points="360,215 410,225 410,255 360,245" fill="#38bdf8" stroke="#0f172a" strokeWidth="2" />
+                  <line x1="385" y1="250" x2="385" y2="260" stroke="#334155" strokeWidth="4" />
+                </g>
+              )}
+
+              {/* RUM 6-10 MÖBELGENERISK DEKOR */}
+              {room.id >= 6 && (
+                <g>
+                  {/* Anslag/dekorationer i varierande stil */}
+                  <polygon points="220,120 360,150 360,230 220,200" fill="#334155" stroke="#475569" strokeWidth="3" />
+                  {/* Bord eller lounge-möbel */}
+                  <polygon points="320,300 480,330 430,390 270,360" fill="#475569" stroke="#1e293b" strokeWidth="2" />
+                  <circle cx="370" cy="340" r="15" fill="#64748b" />
+                </g>
+              )}
+
+              {/* ================= DÖRREN / LÅSET (HÖGRA VÄGGEN) ================= */}
+              <g 
+                className="cursor-pointer group" 
+                onClick={() => handleItemClick('door')}
+              >
+                {/* Dörrkarm i 2.5D */}
+                <polygon points="680,150 800,120 800,320 680,350" fill="#1e293b" stroke="#0f172a" strokeWidth="4" />
+                {/* Dörrblad */}
+                <polygon points="690,158 790,132 790,314 690,340" fill="#334155" className="group-hover:fill-slate-600 transition-colors" />
+                
+                {/* Dörrfönster/skylt */}
+                <polygon points="710,180 770,165 770,220 710,235" fill="#0284c7" opacity="0.6" stroke="#38bdf8" strokeWidth="1" />
+
+                {/* Stort Hänglås / Kodlås */}
+                <rect x="725" y="240" width="30" height="26" rx="4" fill="#eab308" stroke="#ca8a04" strokeWidth="2" />
+                <path d="M 732 240 C 732 228, 748 228, 748 240" fill="none" stroke="#cbd5e1" strokeWidth="4" />
+                <circle cx="740" cy="253" r="3" fill="#713f12" />
+
+                {/* Skylt ovanför dörren */}
+                <rect x="710" y="90" width="60" height="18" rx="3" fill="#dc2626" />
+                <text x="740" y="103" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">UTGÅNG</text>
+
+                {/* Pulserande lås-indikator */}
+                <circle cx="740" cy="253" r="18" fill="#eab308" opacity="0.25" className="animate-ping" />
+              </g>
+
+              {/* ================= SIMS PLUMBOB (INTERAKTIVA PUNKTER) ================= */}
+              
+              {/* Punkt A */}
+              <g 
+                transform={`translate(${room.items.itemA.pos.x}, ${room.items.itemA.pos.y})`} 
+                onClick={() => handleItemClick('itemA')}
+                className="cursor-pointer"
+              >
+                <use href="#plumbob-icon" />
+                <text y="35" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="bold" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.9))">
+                  {room.items.itemA.name}
+                </text>
+              </g>
+
+              {/* Punkt B */}
+              <g 
+                transform={`translate(${room.items.itemB.pos.x}, ${room.items.itemB.pos.y})`} 
+                onClick={() => handleItemClick('itemB')}
+                className="cursor-pointer"
+              >
+                <use href="#plumbob-icon" />
+                <text y="35" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="bold" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.9))">
+                  {room.items.itemB.name}
+                </text>
+              </g>
+
+              {/* Dörr etikett */}
+              <text x="740" y="380" textAnchor="middle" fill="#facc15" fontSize="13" fontWeight="bold" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.9))">
+                Klicka för att låsa upp
+              </text>
+
+            </svg>
+          </main>
+
+          {/* ================= BOTTENPANEL: ANTECKNINGSBOK & HJÄLP ================= */}
+          <footer className="w-full mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+            
+            {/* Anteckningsboken (Tar 2 av 3 kolumner) */}
+            <div className="md:col-span-2 bg-[#fdfbf7] text-slate-800 rounded-2xl p-4 shadow-xl border-l-[12px] border-amber-600 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+              <div>
+                <div className="flex items-center justify-between border-b border-amber-200 pb-1 mb-2">
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-amber-900">
+                    Elevens Anteckningsbok – {room.title}
+                  </h3>
+                  <span className="text-[11px] text-amber-700">Sparar automatiskt</span>
+                </div>
+                
+                <ul className="space-y-1.5 font-handwriting text-xl text-slate-900 leading-snug">
+                  {discoveredItems.size === 0 ? (
+                    <li className="text-slate-400 italic text-lg list-none pt-2">
+                      Klicka på de gröna Sims-diamanterna (Plumbobs) i rummet för att hitta ledtrådar till lösenordet...
                     </li>
-                  ))}
+                  ) : (
+                    Array.from(discoveredItems).map((key) => (
+                      <li key={key} className="animate-note flex items-start gap-2">
+                        <span className="text-emerald-700 font-bold">✔</span>
+                        <span>{room.items[key].note}</span>
+                      </li>
+                    ))
+                  )}
                 </ul>
               </div>
 
-              <div className="bg-[#0f3329] rounded-xl p-5 shadow-lg border border-[#1b4b3d] flex flex-col justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-2">Fastnat?</h3>
-                  <p className="text-sm text-green-100/80 mb-4">
-                    Klicka på sakerna i rummet. Behöver du hjälp med vad koden är?
-                  </p>
-                </div>
-                {showHint ? (
-                  <div className="bg-[#164a3b] p-3 rounded-lg border border-green-500/30">
-                    <p className="text-sm text-yellow-300 italic">Ledtråd: {level.lock.hint}</p>
-                  </div>
-                ) : (
-                  <button 
-                    onClick={() => setShowHint(true)}
-                    className="w-full py-3 bg-[#eab308] hover:bg-yellow-400 text-yellow-900 font-bold rounded-lg transition-colors"
-                  >
-                    Visa en ledtråd
-                  </button>
-                )}
+              <div className="text-[11px] text-slate-400 pt-2 border-t border-amber-100 flex justify-between">
+                <span>Hitta alla ledtrådar för att lista ut koden.</span>
+                <span>{discoveredItems.size} av 2 upptäckta</span>
               </div>
             </div>
-          </div>
 
-          {/* MODAL / POPUP */}
+            {/* Hjälp & Fastnat-panel */}
+            <div className="bg-[#172533] rounded-2xl p-4 shadow-xl border border-slate-700 flex flex-col justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-1.5">
+                  <span className="text-amber-400">💡</span> Behöver ni hjälp?
+                </h3>
+                <p className="text-xs text-slate-300 mb-3">
+                  Diskutera ledtrådarna i gruppen. Kan ni lista ut vilket ord som öppnar dörren?
+                </p>
+              </div>
+
+              {showHint ? (
+                <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-300">
+                  <strong>Tips:</strong> {room.door.hint}
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setShowHint(true)}
+                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-bold rounded-xl border border-amber-500/30 transition-colors"
+                >
+                  Visa en ledtråd
+                </button>
+              )}
+            </div>
+
+          </footer>
+
+          {/* ================= POPUP / MODAL ================= */}
           {activeModal && (
-            <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 animate-fade-in">
-              <div className="bg-[#0a241c] border border-[#1f5544] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-scale-up relative">
-                <div className="flex justify-between items-center bg-[#0d2f25] px-6 py-4 border-b border-[#1f5544]">
-                  <h3 className="text-xl font-bold text-white">
-                    {activeModal === 'lock' ? level.lock.title : level.items[activeModal].title}
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-[#172533] border-2 border-slate-600 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl animate-note">
+                
+                {/* Modal Header */}
+                <div className="px-5 py-3.5 bg-slate-800/80 border-b border-slate-700 flex justify-between items-center">
+                  <h3 className="font-bold text-white text-sm flex items-center gap-2">
+                    {activeModal === 'door' ? '🔐 ' + room.door.name : '🔍 ' + room.items[activeModal].title}
                   </h3>
                   <button 
                     onClick={handleCloseModal}
-                    className="text-gray-400 hover:text-white px-3 py-1 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
+                    className="text-slate-400 hover:text-white text-xs px-2 py-1 bg-slate-700 rounded-md"
                   >
-                    Stäng X
+                    Stäng ✕
                   </button>
                 </div>
 
-                <div className="p-8">
-                  {activeModal !== 'lock' && (
-                    <div className="text-center">
-                      <div className="bg-[#fdf5e6] text-gray-800 p-6 rounded-lg shadow-inner mb-6 text-lg" style={{ fontFamily: "'Caveat', cursive", fontSize: '1.6rem', lineHeight: '1.4' }}>
-                        "{level.items[activeModal].text}"
+                {/* Modal Innehåll */}
+                <div className="p-6">
+                  {activeModal !== 'door' ? (
+                    <div>
+                      <div className="bg-[#fdfbf7] text-slate-800 p-5 rounded-xl mb-5 font-handwriting text-2xl leading-snug shadow-inner border border-amber-200">
+                        "{room.items[activeModal].text}"
                       </div>
                       <button 
                         onClick={handleCloseModal}
-                        className="px-6 py-2 bg-[#22c55e] hover:bg-green-500 text-white font-bold rounded-lg transition-colors"
+                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-all shadow-md"
                       >
-                        Skriv ner i boken
+                        Skriv in i anteckningsboken
                       </button>
                     </div>
-                  )}
+                  ) : (
+                    <div>
+                      <p className="text-slate-200 text-sm mb-4 leading-relaxed font-medium">
+                        {room.door.question}
+                      </p>
 
-                  {activeModal === 'lock' && (
-                    <div className="text-center">
-                      <p className="text-lg text-green-50 mb-6">{level.lock.question}</p>
-                      <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-4">
+                      <form onSubmit={handleUnlock} className="space-y-3">
                         <input 
                           type="text" 
-                          value={passwordInput}
-                          onChange={(e) => setPasswordInput(e.target.value)}
-                          placeholder="SKRIV LÖSENORDET HÄR..."
-                          className="w-full bg-[#051410] border-2 border-[#1f5544] text-white text-center text-xl p-4 rounded-xl focus:outline-none focus:border-[#22c55e] uppercase tracking-widest"
+                          value={inputCode}
+                          onChange={(e) => setInputCode(e.target.value)}
+                          placeholder="SKRIV KODEN HÄR..."
                           autoFocus
+                          className="w-full py-3 px-4 bg-slate-900 border-2 border-slate-600 focus:border-emerald-500 rounded-xl text-center text-lg font-black text-white tracking-widest uppercase focus:outline-none"
                         />
-                        {errorMsg && <p className="text-red-400 font-bold animate-shake">{errorMsg}</p>}
+
+                        {errorMsg && (
+                          <p className="text-xs text-rose-400 font-bold text-center animate-shake">
+                            {errorMsg}
+                          </p>
+                        )}
+
                         <button 
                           type="submit"
-                          className="w-full py-4 bg-[#eab308] hover:bg-yellow-400 text-yellow-900 font-black text-xl rounded-xl transition-colors mt-2 uppercase tracking-wide"
+                          className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm uppercase tracking-wider rounded-xl transition-all shadow-lg"
                         >
-                          Lås Upp
+                          Lås upp dörren
                         </button>
                       </form>
                     </div>
                   )}
                 </div>
+
               </div>
             </div>
           )}
+
         </div>
       );
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<EscapeRoomApp />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<SimsSchoolEscape />);
   </script>
 </body>
 </html>
