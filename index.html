@@ -15,7 +15,7 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #06110d; color: #f1f5f9; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #050d0a; color: #f1f5f9; }
     .font-handwriting { font-family: 'Caveat', cursive; }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
 
@@ -40,10 +40,10 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useRef } = React;
 
     // ========================================================
-    // 10 ELEVNÄRA RUM UTAN FUSK-SIFFROR ELLER FÖRLÄNGD TEORI
+    // 10 ELEVNÄRA RUM UTAN STEREOTYPER ELLER KLUMPIGA GÅTOR
     // ========================================================
     const ROOMS = [
       {
@@ -136,19 +136,19 @@
         cluePrompt: "Den öppna uppslagsboken på bordet",
         puzzlePrompt: "Lönnfacket i den mörka bokhyllan",
         clue: {
-          title: "Dolda nålstick & Mikroaggressioner",
-          text: "Mikroaggressioner är vardagliga kommentarer som inte nödvändigtvis sägs med öppet hat, men som bygger på fördomar. De maskeras ofta som beröm eller 'nyfikna frågor' och påminner ständigt personen om att hen betraktas som annorlunda och inte självklar i gruppen."
+          title: "Dolda nålstick & Vardagsrasism",
+          text: "Mikroaggressioner är kommentarer som ofta sägs utan avsikt att såra, men som avslöjar dolda fördomar. De maskeras ofta som nyfikna frågor om ursprung eller förenklingar av personens namn, och påminner ständigt personen om att hen inte betraktas som en självklar del av samhället."
         },
         puzzle: {
           type: "multiSelect",
-          title: "Vilka 3 kommentarer är typiska mikroaggressioner?",
-          instruction: "Välj de 3 repliker som verkar harmlösa men som bygger på fördomar och exkludering:",
+          title: "Vilka 3 kommentarer är typiska exempel på dolda mikroaggressioner?",
+          instruction: "Välj de 3 repliker som verkar oskyldiga men som bygger på fördomar och exkludering:",
           options: [
-            { id: "m1", text: "”Vad otroligt bra svenska du talar! Vart kommer du ifrån på riktigt?” (till någon född i Sverige)", correct: true },
-            { id: "m2", text: "”Får jag låna din linjal under geometrilektionen?”", correct: false },
-            { id: "m3", text: "”Du är inte alls som andra tjejer, du är faktiskt rolig och fattar humor.”", correct: true },
-            { id: "m4", text: "”Borde inte du vara grym på basket och löpning med din bakgrund?”", correct: true },
-            { id: "m5", text: "”Bra jobbat på presentationen idag, du förklarade väldigt tydligt!”", correct: false }
+            { id: "m1", text: "”Vad otroligt ren och bra svenska du talar! Vart kommer dina föräldrar ifrån på riktigt?”", correct: true },
+            { id: "m2", text: "”Kan du skicka över anteckningarna från biologilektionen igår?”", correct: false },
+            { id: "m3", text: "”Ditt namn är alldeles för krångligt att uttala, jag kallar dig Alex istället.”", correct: true },
+            { id: "m4", text: "”Du ser inte alls ut som en som heter så, hur kommer det sig?”", correct: true },
+            { id: "m5", text: "”Bra jobbat på presentationen idag, du förklarade sambanden väldigt tydligt!”", correct: false }
           ],
           requiredCount: 3,
           rewardText: "Lönnfacket i den mörka ekhyllan öppnas med ett klick! En pappersremsa visar kombinationen: M - O - D - S."
@@ -192,19 +192,19 @@
         cluePrompt: "Skoltidningen på cafébordet",
         puzzlePrompt: "Dryckesautomaten",
         clue: {
-          title: "Ekokammare & Ryktesspridning",
-          text: "Ett elakt rykte fungerar som en ekokammare: ju fler som delar och spekulerar i en grupp utan att ifrågasätta källan, desto sannare verkar lögnen bli. Det enda sättet att stoppa ryktet är att någon vågar kräva bevis och säga ifrån."
+          title: "Ekokammare & Utfrysning vid matborden",
+          text: "Ett rykte fungerar som en ekokammare: ju fler som delar och spekulerar i en grupp utan att ifrågasätta källan, desto sannare verkar lögnen bli. I cafeterian leder det ofta till att elever fryses ut vid lunchborden. Det enda sättet att stoppa detta är källkritik och civilkurage – att aktivt bryta mönstret och bjuda in den som sitter ensam."
         },
         puzzle: {
           type: "categorize",
-          title: "Vad sprider ryktet vidare vs vad stoppar det?",
-          instruction: "Sortera elevernas handlingar utifrån källkritik och ansvar:",
-          categories: ["Sprider ryktet vidare", "Stoppar ryktet"],
+          title: "Vad eldar på utanförskapet vs vad skapar en trygg matsal?",
+          instruction: "Sortera elevernas handlingar utifrån källkritik och gemenskap:",
+          categories: ["Eldar på utanförskap", "Skapar gemenskap"],
           items: [
-            { id: "e1", text: "Skicka vidare en skärmdump på ryktet till en annan klass med texten: 'Har ni hört?!'", correct: "Sprider ryktet vidare" },
-            { id: "e2", text: "Fråga rakt ut i gruppen: 'Hur vet vi att det här är sant? Det låter som rent påhitt.'", correct: "Stoppar ryktet" },
-            { id: "e3", text: "Skriva privat till personen ryktet handlar om, fråga hur hen mår och erbjuda stöd", correct: "Stoppar ryktet" },
-            { id: "e4", text: "Börja undvika personen i matsalen enbart för att 'alla andra säger att hen gjort bort sig'", correct: "Sprider ryktet vidare" }
+            { id: "e1", text: "Skicka vidare en skärmdump på ryktet till en annan klass med texten: 'Har ni hört?!'", correct: "Eldar på utanförskap" },
+            { id: "e2", text: "Fråga rakt ut i gruppen: 'Hur vet vi att det här är sant? Det låter som rent påhitt.'", correct: "Skapar gemenskap" },
+            { id: "e3", text: "Gå och sätta sig bredvid eleven som sitter själv vid fönsterbordet och prata om helgen", correct: "Skapar gemenskap" },
+            { id: "e4", text: "Börja undvika eleven i kön enbart för att 'alla andra säger att hen gjort bort sig'", correct: "Eldar på utanförskap" }
           ],
           rewardText: "KLONK! Dryckesautomaten matar ut Köksnyckeln i returfacket!"
         }
@@ -219,19 +219,19 @@
         cluePrompt: "Taktiktavlan vid ribbstolarna",
         puzzlePrompt: "Gymnastikplintens lås",
         clue: {
-          title: "Lagpepp kontra Sexistisk jargong",
-          text: "På idrotten ska alla kunna delta på lika villkor. Kommentarer som gör ner någons prestation med hänvisning till kön, eller att använda ord som 'kärring' eller 'bög' som skällsord, är inte oskyldigt tugg. Det är kränkningar enligt diskrimineringslagen."
+          title: "Lagpepp kontra Sexistisk jargong (för alla kön)",
+          text: "Sexism begränsar både killar och tjejer. Killar drabbas hårt av machonormer: att hånskratta om en kille visar känslor, gråter eller vill dansa ('bete dig som en man', 'bög'). Tjejer möts av fördomar om att de inte är tillräckligt starka eller inte förstår spelet. Verkligt lagpepp lyfter alla oavsett kön."
         },
         puzzle: {
           type: "categorize",
-          title: "Avgör om kommentaren är Konstruktivt pepp eller Sexistisk kränkning",
-          instruction: "Placera uttalandena på rätt sida om lagens gräns:",
-          categories: ["Konstruktivt pepp", "Sexistisk kränkning"],
+          title: "Avgör om kommentaren är Konstruktivt lagpepp eller Sexistisk kränkning",
+          instruction: "Placera uttalandena på rätt sida om gränsen (granska både kill- och tjejnormer):",
+          categories: ["Konstruktivt lagpepp", "Sexistisk kränkning"],
           items: [
-            { id: "s1", text: "”Bra jobbat i försvaret alla, nu kämpar vi hela vägen till slutsignalen!”", correct: "Konstruktivt pepp" },
+            { id: "s1", text: "”Bra kämpat i försvaret alla, nu kämpar vi hela vägen till slutsignalen!”", correct: "Konstruktivt lagpepp" },
             { id: "s2", text: "”Suck, tjejer borde inte spela innebandy, ni vågar ju inte ens gå in i närkamper”", correct: "Sexistisk kränkning" },
-            { id: "s3", text: "”Skjut ordentligt, sluta larva dig som en liten flicka!”", correct: "Sexistisk kränkning" },
-            { id: "s4", text: "”Håll koll på passningarna så hjälps vi åt att hitta fria ytor i anfallet!”", correct: "Konstruktivt pepp" }
+            { id: "s3", text: "”Sluta lipa och bita ihop som en man, vad är du för kärring egentligen?” (till en kille som slog sig)", correct: "Sexistisk kränkning" },
+            { id: "s4", text: "”Hånflina åt Amir för att han vill köra dans istället för fotboll på uppvärmningen”", correct: "Sexistisk kränkning" }
           ],
           rewardText: "Plintlocket i trä öppnas med ett klick! Bland hopprepen ligger den gula Förrådsnyckeln."
         }
@@ -239,25 +239,26 @@
       {
         id: 8,
         title: "Elevhälsans rum",
-        subtitle: "Arkivskåpet kräver nyckelkort. Läs kuratorns broschyr innan du rör skrinet.",
+        subtitle: "Arkivskåpet kräver nyckelkort. Läs kuratorns broschyr om stress och gemenskap innan du rör skrinet.",
         doorLabel: "ARKIVSKÅP",
         doorType: "padlock",
         keyItem: "Nyckelkortet",
         cluePrompt: "Broschyren på det runda samtalsbordet",
         puzzlePrompt: "Kassaskrinet bakom monsteran",
         clue: {
-          title: "Likvärdighet är inte att alla får samma sak",
-          text: "En vanlig fördom är att elever som får anpassningar (t.ex. eget rum vid prov eller talsyntes) 'fuskar'. Men likvärdighet innebär att ge kompensatoriskt stöd utifrån individuella förutsättningar – precis som att den som har nedsatt syn har självklar rätt till glasögon."
+          title: "Olweus Regel 3: Att se den som är ensam & stötta vid stress",
+          text: "Skolan kan vara full av press – betyg, social status och rädslan att inte passa in. När någon drar sig undan är det ofta ett rop på hjälp. Olweus tredje regel lyder: 'Vi ska även vara tillsammans med elever som ofta är ensamma'. Att erbjuda stöd handlar inte om att ställa diagnoser, utan om att lyssna utan att döma och visa att personen räknas."
         },
         puzzle: {
           type: "categorize",
-          title: "Koppla rätt kompensatoriskt stöd till rätt behov",
-          instruction: "Sortera stödet under rätt funktionsvariation:",
-          categories: ["Dyslexi", "Nedsatt rörelseförmåga", "ADHD/Koncentration"],
+          title: "Vad stöttar en kompis under press vs vad ökar ensamheten?",
+          instruction: "Sortera handlingarna utifrån empati och medmänsklighet:",
+          categories: ["Stöttar och inkluderar", "Ökar stress och isolering"],
           items: [
-            { id: "f1", text: "Talsyntes, inlästa läromedel och förlängd skrivtid vid prov", correct: "Dyslexi" },
-            { id: "f2", text: "Tröskelfria dörrar, hiss och bänk anpassad för rullstol", correct: "Nedsatt rörelseförmåga" },
-            { id: "f3", text: "Skärmad arbetsplats, brusreducerande hörlurar och tydliga delmål", correct: "ADHD/Koncentration" }
+            { id: "f1", text: "Fråga lugnt på tu man hand: 'Jag har märkt att du verkar lite nere, vill du ta en promenad på rasten?'", correct: "Stöttar och inkluderar" },
+            { id: "f2", text: "Skriva i en öppen grupp: 'Varför är du så konstig och osocial nuförtiden?'", correct: "Ökar stress och isolering" },
+            { id: "f3", text: "Bjuda in personen till grupparbetet utan att göra en stor grej av det", correct: "Stöttar och inkluderar" },
+            { id: "f4", text: "Prata bakom ryggen om att personen 'har blivit tråkig och aldrig hänger med'", correct: "Ökar stress och isolering" }
           ],
           rewardText: "Kassaskrinet öppnas! Inuti ligger kuratorns magnetiska Nyckelkort."
         }
@@ -319,12 +320,78 @@
       }
     ];
 
+    // ========================================================
+    // KONFETTI-KOMPONENT (FÖR AVSLUTANDE FIRANDE)
+    // ========================================================
+    function ConfettiCanvas() {
+      const canvasRef = useRef(null);
+
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const pieces = [];
+        const numberOfPieces = 150;
+        const colors = ['#f59e0b', '#ec4899', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444'];
+
+        for (let i = 0; i < numberOfPieces; i++) {
+          pieces.push({
+            x: Math.random() * width,
+            y: Math.random() * height - height,
+            rotation: Math.random() * 360,
+            size: Math.random() * 12 + 6,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speed: Math.random() * 4 + 2,
+            rotSpeed: Math.random() * 4 - 2
+          });
+        }
+
+        let animationId;
+        const render = () => {
+          ctx.clearRect(0, 0, width, height);
+          pieces.forEach(p => {
+            p.y += p.speed;
+            p.rotation += p.rotSpeed;
+            if (p.y > height) {
+              p.y = -20;
+              p.x = Math.random() * width;
+            }
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            ctx.restore();
+          });
+          animationId = requestAnimationFrame(render);
+        };
+
+        render();
+
+        const handleResize = () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        };
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+          cancelAnimationFrame(animationId);
+          window.removeEventListener('resize', handleResize);
+        };
+      }, []);
+
+      return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-50" />;
+    }
+
     function EscapeRoomApp() {
       const [currentRoomIndex, setCurrentRoomIndex] = useState(0);
       const [inventory, setInventory] = useState(new Set());
       const [clueRead, setClueRead] = useState(false);
       const [puzzleSolved, setPuzzleSolved] = useState(false);
-      const [activeModal, setActiveModal] = useState(null); // 'clue', 'puzzle', 'doorLock', 'blocked'
+      const [activeModal, setActiveModal] = useState(null);
       const [blockedMessage, setBlockedMessage] = useState("");
       
       const [reorderList, setReorderList] = useState([]);
@@ -337,6 +404,7 @@
       
       const [errorMsg, setErrorMsg] = useState("");
       const [gameWon, setGameWon] = useState(false);
+      const [classNameInput, setClassNameInput] = useState("Klass 8B");
 
       const room = ROOMS[currentRoomIndex];
 
@@ -618,7 +686,7 @@
               </g>
             );
 
-          case 4: // BIBLIOTEKET MED BÖCKER OCH BRASA
+          case 4: // BIBLIOTEKET
             return (
               <g>
                 <rect x="0" y="0" width="800" height="330" fill="#261712" />
@@ -668,24 +736,21 @@
               </g>
             );
 
-          case 5: // GRUPPRUMMET (MODERNT SKOLRUM MED SOFFA OCH CHROMEBOOK)
+          case 5: // GRUPPRUMMET
             return (
               <g>
                 <rect x="0" y="0" width="800" height="330" fill="#111827" />
                 <rect x="0" y="330" width="800" height="170" fill="#1f2937" />
                 <line x1="0" y1="330" x2="800" y2="330" stroke="#374151" strokeWidth="6" />
 
-                {/* Mysig hörnsoffa i grupprummet */}
                 <rect x="80" y="180" width="260" height="130" fill="#374151" stroke="#1f2937" strokeWidth="6" rx="16" />
                 <rect x="100" y="230" width="105" height="70" fill="#4b5563" rx="8" />
                 <rect x="215" y="230" width="105" height="70" fill="#4b5563" rx="8" />
 
-                {/* Chromebook på bordet (Pussel) */}
                 <g className="interactive-item" onClick={handleTryOpenPuzzle}>
                   <rect x="360" y="250" width="220" height="85" fill="#d97706" stroke="#92400e" strokeWidth="4" rx="4" />
                   <rect x="380" y="335" width="14" height="95" fill="#111827" />
                   <rect x="546" y="335" width="14" height="95" fill="#111827" />
-                  {/* Chromebook uppfälld */}
                   <rect x="410" y="170" width="110" height="75" fill="#0f172a" stroke="#64748b" strokeWidth="4" rx="4" />
                   <rect x="418" y="178" width="94" height="59" fill={puzzleSolved ? "#16a34a" : "#38bdf8"} opacity="0.9" />
                   <polygon points="395,245 535,245 525,255 405,255" fill="#94a3b8" />
@@ -695,7 +760,6 @@
                   </text>
                 </g>
 
-                {/* Skissblock / Anteckningar på väggen (Ledtråd) */}
                 <g className="interactive-item" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
                   <rect x="120" y="50" width="180" height="110" fill="#fef08a" stroke="#ca8a04" strokeWidth="4" rx="4" />
                   <line x1="140" y1="80" x2="270" y2="80" stroke="#854d0e" strokeWidth="3" />
@@ -714,6 +778,12 @@
                 <rect x="0" y="0" width="800" height="330" fill="#f8fafc" />
                 <rect x="0" y="330" width="800" height="170" fill="#cbd5e1" />
                 
+                {/* Krittavla med meny */}
+                <rect x="60" y="40" width="180" height="100" fill="#1e293b" stroke="#64748b" strokeWidth="4" rx="3" />
+                <text x="150" y="70" fill="#facc15" fontSize="12" fontWeight="bold" textAnchor="middle">CAFÉ MENY</text>
+                <line x1="80" y1="90" x2="220" y2="90" stroke="#94a3b8" strokeWidth="2" strokeDasharray="4 4" />
+                <line x1="80" y1="110" x2="200" y2="110" stroke="#94a3b8" strokeWidth="2" strokeDasharray="4 4" />
+
                 <g className="interactive-item" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
                   <rect x="360" y="270" width="240" height="60" fill="#ffffff" stroke="#94a3b8" strokeWidth="4" rx="6" />
                   <rect x="420" y="240" width="35" height="20" fill="#0f172a" rx="3" />
@@ -724,11 +794,11 @@
                 </g>
 
                 <g className="interactive-item" onClick={handleTryOpenPuzzle}>
-                  <rect x="110" y="70" width="190" height="260" fill="#e11d48" stroke="#be123c" strokeWidth="6" rx="6" />
-                  <rect x="130" y="90" width="150" height="110" fill="#0f172a" rx="4" />
-                  <rect x="130" y="240" width="150" height="45" fill="#1e293b" rx="4" />
-                  <rect x="125" y="295" width="160" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
-                  <text x="205" y="310" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                  <rect x="110" y="160" width="170" height="170" fill="#e11d48" stroke="#be123c" strokeWidth="6" rx="6" />
+                  <rect x="130" y="180" width="130" height="70" fill="#0f172a" rx="4" />
+                  <rect x="130" y="260" width="130" height="35" fill="#1e293b" rx="4" />
+                  <rect x="120" y="300" width="150" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
+                  <text x="195" y="315" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
                     {puzzleSolved ? "✓ AUTOMAT FIXAD" : clueRead ? "2. PROGRAMMERA AUTOMATEN" : "🔒 SPÄRRAD"}
                   </text>
                 </g>
@@ -777,52 +847,94 @@
               </g>
             );
 
-          case 8: // ELEVHÄLSANS RUM
+          case 8: // KURATORN (MYSIG SKANDINAVISK INREDNING)
             return (
               <g>
-                <rect x="0" y="0" width="800" height="320" fill="#fef3c7" />
-                <rect x="0" y="320" width="800" height="180" fill="#78350f" />
-                <ellipse cx="260" cy="420" rx="140" ry="35" fill="#fde68a" opacity="0.8" />
+                <rect x="0" y="0" width="800" height="330" fill="#2e3830" />
+                <rect x="0" y="330" width="800" height="170" fill="#523928" />
+                <line x1="0" y1="330" x2="800" y2="330" stroke="#382519" strokeWidth="6" />
 
+                {/* Varm rund matta */}
+                <ellipse cx="280" cy="420" rx="150" ry="40" fill="#d4c5b3" opacity="0.6" />
+
+                {/* Modern bekväm fåtölj med pläd */}
                 <g className="interactive-item" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
-                  <rect x="130" y="190" width="240" height="130" fill="#047857" stroke="#065f46" strokeWidth="6" rx="16" />
-                  <rect x="160" y="295" width="180" height="20" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
-                  <text x="250" y="309" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
-                    {clueRead ? "✓ BROSCHYR LÄST" : "1. LÄS BROSCHYREN"}
+                  <rect x="130" y="190" width="230" height="130" fill="#4a6352" stroke="#2e3f34" strokeWidth="6" rx="16" />
+                  <rect x="150" y="240" width="90" height="70" fill="#5c7a66" rx="8" />
+                  <rect x="250" y="240" width="90" height="70" fill="#5c7a66" rx="8" />
+                  {/* Stickad pläd */}
+                  <path d="M 160 210 Q 180 230 190 260 L 170 270 Z" fill="#d97706" />
+                  <rect x="150" y="295" width="190" height="20" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
+                  <text x="245" y="309" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ BROSCHYR LÄST" : "1. LÄS KURATORNS BROSCHYR"}
                   </text>
                 </g>
 
+                {/* Hörnbord med monsteraväxt och skrin */}
                 <g className="interactive-item" onClick={handleTryOpenPuzzle}>
-                  <polygon points="480,240 540,240 530,310 490,310" fill="#d97706" />
-                  <circle cx="510" cy="180" r="30" fill="#15803d" />
-                  <rect x="440" y="330" width="150" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
-                  <text x="515" y="345" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                  {/* Träbord */}
+                  <ellipse cx="510" cy="310" rx="80" ry="25" fill="#78350f" stroke="#451a03" strokeWidth="4" />
+                  <line x1="510" y1="335" x2="510" y2="420" stroke="#451a03" strokeWidth="10" />
+                  
+                  {/* Kruka med Monstera */}
+                  <polygon points="485,260 535,260 525,300 495,300" fill="#ea580c" />
+                  <circle cx="510" cy="220" r="28" fill="#15803d" />
+                  <circle cx="480" cy="210" r="22" fill="#16a34a" />
+                  <circle cx="535" cy="215" r="24" fill="#22c55e" />
+
+                  {/* Litet kassaskrin */}
+                  <rect x="450" y="280" width="40" height="25" fill="#64748b" rx="2" />
+                  <circle cx="470" cy="292" r="3" fill="#facc15" />
+
+                  <rect x="420" y="350" width="180" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
+                  <text x="510" y="365" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
                     {puzzleSolved ? "✓ SKRIN ÖPPNAT" : clueRead ? "2. UNDERSÖK SKRINET" : "🔒 SPÄRRAT"}
                   </text>
                 </g>
               </g>
             );
 
-          case 9: // UPPEHÅLLSRUMMET
+          case 9: // UPPEHÅLLSRUMMET (SITTSÄCKAR, LJUSSLINGA & BORDTENNIS)
             return (
               <g>
-                <rect x="0" y="0" width="800" height="310" fill="#1e1b4b" />
-                <rect x="0" y="310" width="800" height="190" fill="#312e81" />
+                <rect x="0" y="0" width="800" height="320" fill="#1e1b4b" />
+                <rect x="0" y="320" width="800" height="180" fill="#312e81" />
+                <line x1="0" y1="320" x2="800" y2="320" stroke="#1e1b4b" strokeWidth="6" />
 
+                {/* Mysig ljusslinga längs taket */}
+                <path d="M 0 30 Q 200 60 400 30 T 800 30" fill="none" stroke="#4338ca" strokeWidth="2" />
+                {[60, 140, 220, 300, 380, 460, 540, 620].map((cx, i) => (
+                  <circle key={i} cx={cx} cy={cx % 160 === 60 ? 45 : 32} r="5" fill={['#f43f5e', '#38bdf8', '#facc15', '#4ade80'][i % 4]} />
+                ))}
+
+                {/* Stor mjuk sittsäck i hörnet */}
+                <ellipse cx="140" cy="380" rx="70" ry="40" fill="#e11d48" opacity="0.9" />
+                <ellipse cx="140" cy="365" rx="55" ry="30" fill="#f43f5e" />
+
+                {/* Affisch om gemenskap (Ledtråd) */}
                 <g className="interactive-item" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
-                  <rect x="120" y="50" width="170" height="190" fill="#fbbf24" stroke="#d97706" strokeWidth="6" rx="4" />
-                  <circle cx="205" cy="120" r="35" fill="#ef4444" />
-                  <rect x="135" y="205" width="140" height="20" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
-                  <text x="205" y="219" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
-                    {clueRead ? "✓ AFFISCH STUDERAD" : "1. LÄS AFFISCHEN"}
+                  <rect x="100" y="65" width="160" height="180" fill="#fbbf24" stroke="#d97706" strokeWidth="6" rx="4" />
+                  <circle cx="180" cy="130" r="30" fill="#0284c7" />
+                  <rect x="115" y="195" width="130" height="20" fill={clueRead ? "#15803d" : "#0f172a"} rx="2" />
+                  <text x="180" y="209" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                    {clueRead ? "✓ AFFISCH STUDERAD" : "1. LÄS TRYGGHETSAFFISCHEN"}
                   </text>
                 </g>
 
+                {/* Pingisbord med skrin under (Pussel) */}
                 <g className="interactive-item" onClick={handleTryOpenPuzzle}>
                   <rect x="330" y="260" width="280" height="60" fill="#15803d" stroke="#ffffff" strokeWidth="4" rx="4" />
+                  <line x1="470" y1="240" x2="470" y2="320" stroke="#ffffff" strokeWidth="4" />
+                  <rect x="350" y="320" width="14" height="90" fill="#0f172a" />
+                  <rect x="576" y="320" width="14" height="90" fill="#0f172a" />
                   <circle cx="430" cy="285" r="12" fill="#dc2626" />
-                  <rect x="380" y="340" width="180" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
-                  <text x="470" y="355" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
+                  
+                  {/* Skrinet under bordet */}
+                  <rect x="440" y="350" width="60" height="35" fill="#475569" stroke="#1e293b" strokeWidth="3" rx="3" />
+                  <circle cx="470" cy="365" r="3" fill="#facc15" />
+
+                  <rect x="380" y="395" width="180" height="22" fill={puzzleSolved ? "#15803d" : clueRead ? "#b45309" : "#0f172a"} rx="3" />
+                  <text x="470" y="410" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
                     {puzzleSolved ? "✓ SKRIN UPPLÅST" : clueRead ? "2. ÖPPNA SKRINET" : "🔒 SPÄRRAT"}
                   </text>
                 </g>
@@ -832,9 +944,10 @@
           case 10: // EXPEDITIONEN
             return (
               <g>
-                <rect x="0" y="0" width="800" height="320" fill="#312e81" />
+                <rect x="0" y="0" width="800" height="320" fill="#1e1b4b" />
                 <rect x="0" y="320" width="800" height="180" fill="#451a03" />
 
+                {/* Diplom på väggen */}
                 <g className="interactive-item" onClick={() => { setClueRead(true); setActiveModal('clue'); }}>
                   <rect x="170" y="50" width="170" height="130" fill="#fef08a" stroke="#ca8a04" strokeWidth="8" rx="4" />
                   <circle cx="255" cy="100" r="25" fill="#eab308" />
@@ -844,6 +957,7 @@
                   </text>
                 </g>
 
+                {/* Skrivbord med pärm */}
                 <g className="interactive-item" onClick={handleTryOpenPuzzle}>
                   <rect x="370" y="240" width="230" height="90" fill="#78350f" stroke="#451a03" strokeWidth="6" rx="4" />
                   <rect x="410" y="200" width="40" height="15" fill="#15803d" rx="3" />
@@ -860,22 +974,63 @@
         }
       };
 
+      // ========================================================
+      // AVSLUTNINGSSKÄRM MED KONFETTI & DIGITALT CERTIFIKAT
+      // ========================================================
       if (gameWon) {
         return (
-          <div className="min-h-screen bg-[#050d0a] flex items-center justify-center p-4">
-            <div className="bg-[#0b1f17] border-2 border-amber-400 rounded-3xl p-10 max-w-xl text-center shadow-2xl">
-              <div className="w-24 h-24 mx-auto mb-6 bg-amber-400/20 rounded-full flex items-center justify-center border-2 border-amber-400 text-5xl">
+          <div className="min-h-screen bg-[#040e0a] flex items-center justify-center p-4 relative overflow-hidden">
+            <ConfettiCanvas />
+
+            <div className="bg-[#0b241b] border-2 border-amber-400 rounded-3xl p-6 md:p-10 max-w-2xl w-full text-center shadow-2xl relative z-10 animate-unlock">
+              
+              <div className="w-24 h-24 mx-auto mb-4 bg-amber-400/20 rounded-full flex items-center justify-center border-2 border-amber-400 text-5xl shadow-lg">
                 🏆
               </div>
-              <h1 className="text-3xl font-extrabold text-amber-400 mb-3 uppercase tracking-wider">Alla 10 rum avklarade!</h1>
-              <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                Ni har tagit er igenom alla skolans praktiska utmaningar, brutit destruktiva normer och visat hur ett genuint tryggt och inkluderande <strong>SKOLKLIMAT</strong> skapas varje dag!
+
+              <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-400 text-slate-950 uppercase tracking-widest inline-block mb-2">
+                UPPDRAG SLUTFÖRT
+              </span>
+
+              <h1 className="text-3xl md:text-4xl font-extrabold text-amber-300 mb-3 tracking-tight">
+                Grattis! Ni knäckte alla 10 rum!
+              </h1>
+
+              <p className="text-slate-300 text-sm md:text-base leading-relaxed mb-6 max-w-xl mx-auto">
+                Ni tog er igenom alla skolans miljöer, bröt destruktiva normer, visade civilkurage och bevisade att ett tryggt och inkluderande <strong>SKOLKLIMAT</strong> skapas av oss tillsammans!
               </p>
+
+              {/* Digitalt Trygghetscertifikat */}
+              <div className="bg-[#fcf9f2] text-slate-900 rounded-2xl p-6 border-4 border-amber-500 shadow-inner max-w-lg mx-auto mb-6 text-left relative">
+                <div className="flex justify-between items-center border-b-2 border-amber-200 pb-2 mb-3">
+                  <span className="font-bold text-xs uppercase tracking-widest text-amber-900">Trygghetscertifikat</span>
+                  <span className="text-xs font-mono font-bold text-amber-700">Datum: 2026</span>
+                </div>
+
+                <p className="text-xs text-slate-600 mb-1">Detta certifikat tilldelas härmed:</p>
+                <input 
+                  type="text" 
+                  value={classNameInput} 
+                  onChange={(e) => setClassNameInput(e.target.value)}
+                  className="font-handwriting text-3xl text-amber-950 font-bold w-full bg-transparent border-b border-amber-300 focus:outline-none mb-3"
+                  placeholder="Klicka för att skriva klassnamn..."
+                />
+
+                <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                  För att framgångsrikt ha identifierat härskartekniker, brutit åskådarrollen i Olweus mobbningsring och visat modet att skapa en skola där alla kan känna sig trygga.
+                </p>
+
+                <div className="mt-4 flex justify-between items-end pt-2 border-t border-amber-200 text-[10px] text-slate-500">
+                  <span>Utfärdat av: Skolans Trygghetsteam</span>
+                  <span className="text-base">★ ★ ★ ★ ★</span>
+                </div>
+              </div>
+
               <button 
                 onClick={() => { setCurrentRoomIndex(0); setInventory(new Set()); setGameWon(false); initRoom(0); }}
-                className="px-8 py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl transition-all shadow-lg hover:scale-105 uppercase tracking-wider"
+                className="px-8 py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl transition-all shadow-lg hover:scale-105 uppercase tracking-wider text-xs"
               >
-                Börja om från Rum 1
+                Spela igen från början
               </button>
             </div>
           </div>
