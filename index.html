@@ -26,12 +26,19 @@
     /* Sims Plumbob animation */
     @keyframes plumbob-float {
       0%, 100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 6px #22c55e); }
-      50% { transform: translateY(-8px) scale(1.08); filter: drop-shadow(0 0 12px #4ade80); }
+      50% { transform: translateY(-10px) scale(1.1); filter: drop-shadow(0 0 12px #4ade80); }
     }
     .sims-plumbob {
       animation: plumbob-float 2s ease-in-out infinite;
       transform-origin: center;
     }
+
+    /* Animation när man byter rum */
+    @keyframes room-transition {
+      0% { opacity: 0; transform: scale(0.95) translateY(15px); filter: blur(4px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+    }
+    .animate-room { animation: room-transition 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
     @keyframes fade-in-up {
       0% { opacity: 0; transform: translateY(8px); }
@@ -55,24 +62,24 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // --- 10 SKOLMILJÖER MED SPECIFIKA TEMAN & LEDTRÅDAR ---
+    // --- 10 SKOLMILJÖER MED UNIKA TEMAN, FÄRGER OCH KOORDINATER ---
     const ROOMS = [
       {
         id: 1,
         title: "Klassrum 8B",
         subtitle: "Lektionen är slut, men dörren har låsts automatiskt.",
-        themeColor: { wallL: "#8fa39a", wallR: "#7c9389", floor: "#c2b49d" },
+        themeColor: { wallL: "#8fa39a", wallR: "#7c9389", floor: "#c2b49d", door: "#475569" },
         items: {
           itemA: {
             name: "Whiteboarden",
-            pos: { x: 260, y: 150 },
+            pos: { x: 260, y: 150 }, // Uppe till vänster
             title: "Text på whiteboarden",
             text: "Läraren har skrivit: 'Vi har rätt att uttrycka våra tankar i en demokrati, men skollagen förbjuder alla former av kränkningar.'",
             note: "Whiteboard: Yttrandefrihet ger oss rätt att tycka, men inte rätt att trycka ner andra."
           },
           itemB: {
-            name: "Bänklocket",
-            pos: { x: 420, y: 320 },
+            name: "Längst ner i bänken",
+            pos: { x: 420, y: 390 }, // Nere i mitten
             title: "Anteckning på bänken",
             text: "På en kladdig lapp i bänken står det: 'När elaka ord sprids om någons bakgrund, tro eller vem man är... då är det inte längre bara en åsikt.'",
             note: "Bänken: När ord kränker någons identitet räknas det som hat."
@@ -80,7 +87,7 @@
         },
         door: {
           name: "Klassrumsdörren",
-          pos: { x: 740, y: 180 },
+          pos: { x: 740, y: 220 },
           question: "Vad är det som bryter mot yttrandefriheten när ord används för att förödmjuka och hota grupper eller individer?",
           answers: ["HAT", "HATRETORIK"],
           hint: "Tre bokstäver. Motsatsen till kärlek."
@@ -90,18 +97,18 @@
         id: 2,
         title: "Elevskåpskorridoren",
         subtitle: "De blå skåpen ekar tomt. Hitta koden till branddörren.",
-        themeColor: { wallL: "#e2e8f0", wallR: "#cbd5e1", floor: "#64748b" },
+        themeColor: { wallL: "#e2e8f0", wallR: "#cbd5e1", floor: "#64748b", door: "#b91c1c" },
         items: {
           itemA: {
             name: "Anslagstavlan",
-            pos: { x: 280, y: 130 },
+            pos: { x: 300, y: 140 }, // Mitten vänster
             title: "Modepostern",
             text: "Någon har skrivit på lappen: 'Alla måste ha de här skorna annars blir man dissad.' Vem har bestämt det egentligen?",
             note: "Anslagstavlan: Det finns oskrivna regler om vad som anses vara 'rätt' och fel."
           },
           itemB: {
             name: "Skåp 42",
-            pos: { x: 580, y: 220 },
+            pos: { x: 620, y: 200 }, // Högre upp till höger
             title: "Insidan av skåp 42",
             text: "En bok om sociologi ligger uppslagen: 'De osynliga regler som styr hur vi förväntas se ut, klä oss och bete oss kallas...'",
             note: "Skåpet: Osynliga regler som styr vad som ses som 'normalt'."
@@ -109,7 +116,7 @@
         },
         door: {
           name: "Branddörren",
-          pos: { x: 800, y: 230 },
+          pos: { x: 740, y: 220 },
           question: "Vad kallas de oskrivna reglerna och förväntningarna i en grupp som avgör vad som anses 'normalt'?",
           answers: ["NORMER", "NORM"],
           hint: "Börjar på N. Ordet 'normal' härstammar från detta."
@@ -119,18 +126,18 @@
         id: 3,
         title: "Skolgården",
         subtitle: "Grinden till elevuppehållet är reglad. Undersök skolgården.",
-        themeColor: { wallL: "#94a3b8", wallR: "#64748b", floor: "#475569" },
+        themeColor: { wallL: "#94a3b8", wallR: "#64748b", floor: "#334155", door: "#451a03" },
         items: {
           itemA: {
-            name: "Basketkorgen",
-            pos: { x: 250, y: 160 },
-            title: "Basketplanen",
-            text: "Ett gäng stod här igår. Två bråkade medan åtta andra bara stod runt omkring med sina mobiler och filmade i tystnad.",
-            note: "Basketplanen: De flesta stod bara och tittade på utan att säga ifrån."
+            name: "Trädstammen",
+            pos: { x: 230, y: 280 }, // Nere vänster
+            title: "Trädet",
+            text: "Ett gäng stod här igår. Två bråkade medan åtta andra bara stod runt omkring i tystnad med sina mobiler och filmade.",
+            note: "Trädet: De flesta stod bara och tittade på utan att säga ifrån."
           },
           itemB: {
             name: "Rastbänken",
-            pos: { x: 500, y: 340 },
+            pos: { x: 500, y: 380 }, // Längst ner i mitten
             title: "Inristat i bänken",
             text: "Olweus forskning visar: De som varken hejar på eller säger ifrån kallas för en specifik roll i mobbningsringen.",
             note: "Bänken: Den passiva rollen i mobbningsringen som bara ser på."
@@ -138,7 +145,7 @@
         },
         door: {
           name: "Skolgårdsgrinden",
-          pos: { x: 770, y: 220 },
+          pos: { x: 740, y: 220 },
           question: "I Olweus mobbningsring – vad kallas den person som ser kränkningar ske men inte agerar?",
           answers: ["ÅSKÅDARE", "ÅSKÅDAREN"],
           hint: "Samma ord som för publiken som sitter och tittar på en match."
@@ -148,26 +155,26 @@
         id: 4,
         title: "Skolbiblioteket",
         subtitle: "Lugnet här döljer viktiga ledtrådar bland böckerna.",
-        themeColor: { wallL: "#334155", wallR: "#1e293b", floor: "#78350f" },
+        themeColor: { wallL: "#334155", wallR: "#1e293b", floor: "#78350f", door: "#0f172a" },
         items: {
           itemA: {
-            name: "Ordboken på bordet",
-            pos: { x: 400, y: 290 },
-            title: "Uppslagen ordbok",
-            text: "'Men vad bra svenska du pratar!' eller 'Får jag ta på ditt hår?' — Subtila kommentarer som påminner om att man ses som annorlunda.",
-            note: "Bordet: Vardagliga kommentarer som verkar oskyldiga men som bottnar i fördomar."
+            name: "Bokhyllan (Samhälle)",
+            pos: { x: 250, y: 150 }, // Vänster bokhylla
+            title: "Uppslagen bok",
+            text: "'Men vad bra svenska du pratar!' eller 'Får jag ta på ditt hår?' — Subtila kommentarer som påminner mottagaren om att hen är annorlunda.",
+            note: "Hyllan: Vardagliga kommentarer som verkar oskyldiga men exkluderar."
           },
           itemB: {
-            name: "Bokhyllan",
-            pos: { x: 260, y: 140 },
-            title: "Samhällshyllan",
-            text: "Boken 'Dold Rasism': Dessa små vardagliga nålstick kallas för mikro...",
-            note: "Bokhyllan: Kallas mikro-nånting (ett litet fientligt påhopp)."
+            name: "Läs-fåtöljen",
+            pos: { x: 530, y: 350 }, // Höger förgrund
+            title: "Kvarlämnad tidskrift",
+            text: "Artikelrubrik: 'Dold Rasism'. Dessa små vardagliga, ofta omedvetna nålstick av fördomar kallas för mikro-...",
+            note: "Fåtöljen: Kallas mikro-nånting (ett litet fientligt påhopp)."
           }
         },
         door: {
           name: "Bibliotekariens dörr",
-          pos: { x: 740, y: 180 },
+          pos: { x: 740, y: 220 },
           question: "Vad kallas dessa små, vardagliga kränkningar som ofta sker omedvetet utifrån fördomar?",
           answers: ["MIKROAGGRESSION", "MIKROAGGRESSIONER"],
           hint: "Sammansatt av 'mikro' (liten) och aggression (fientligt angrepp)."
@@ -175,28 +182,28 @@
       },
       {
         id: 5,
-        title: "Datasalen (IKT-salen)",
-        subtitle: "Skärmarna lyser blått. Knäck lösenordet på modemet.",
-        themeColor: { wallL: "#1e293b", wallR: "#0f172a", floor: "#334155" },
+        title: "Datasalen (IKT)",
+        subtitle: "Skärmarna lyser blått. Knäck lösenordet på servern.",
+        themeColor: { wallL: "#0f172a", wallR: "#020617", floor: "#1e293b", door: "#38bdf8" },
         items: {
           itemA: {
             name: "Datorskärm 1",
-            pos: { x: 320, y: 210 },
+            pos: { x: 300, y: 200 }, // Datorn uppe till vänster
             title: "Öppen Discord-chatt",
             text: "'Varför skriver folk så mycket grövre saker i chatten än vad de någonsin vågar säga i korridoren?'",
             note: "Skärm 1: Folk vågar vräka ur sig värre saker bakom skärmar."
           },
           itemB: {
-            name: "Tangentbordet",
-            pos: { x: 510, y: 310 },
-            title: "Post-it vid tangentbordet",
+            name: "Serverskåpet",
+            pos: { x: 420, y: 130 }, // Serverrack i bakgrunden
+            title: "Loggfilen",
             text: "Psykologibegrepp: 'Online Disinhibition Effect'. Skärmen skapar en falsk känsla av distans vilket leder till minskad...",
-            note: "Tangentbordet: Bristen på fysisk kontakt minskar vår förmåga att tygla oss."
+            note: "Servern: Bristen på fysisk kontakt minskar vår förmåga att tygla oss."
           }
         },
         door: {
-          name: "Serverskåpet",
-          pos: { x: 740, y: 180 },
+          name: "Säkerhetsdörren",
+          pos: { x: 740, y: 220 },
           question: "Vad är det vi får 'minskad' av när vi gömmer oss bakom en skärm och inte ser mottagarens ansikte?",
           answers: ["SJÄLVKONTROLL", "SJÄLVKONTROLLEN"],
           hint: "Förmågan att styra över sina egna impulser och ord."
@@ -206,26 +213,26 @@
         id: 6,
         title: "Skolcafeterian",
         subtitle: "Här samlas alla. Hitta koden till personalköket.",
-        themeColor: { wallL: "#f1f5f9", wallR: "#e2e8f0", floor: "#b91c1c" },
+        themeColor: { wallL: "#f1f5f9", wallR: "#cbd5e1", floor: "#dc2626", door: "#475569" },
         items: {
           itemA: {
-            name: "Bord 3",
-            pos: { x: 360, y: 280 },
-            title: "Kvarlämnad mobil",
+            name: "Dryckesautomaten",
+            pos: { x: 230, y: 160 }, // Vänster bak
+            title: "Lapp på automaten",
             text: "TikTok-flödet visar exakt samma typ av videor om och om igen. Algoritmen visar bara det användaren redan gillar.",
-            note: "Cafébordet: Algoritmerna stänger in oss med likasinnade åsikter."
+            note: "Automaten: Algoritmerna stänger in oss med likasinnade åsikter."
           },
           itemB: {
-            name: "Dryckesautomaten",
-            pos: { x: 570, y: 170 },
-            title: "Lapp på automaten",
+            name: "Cafébordet",
+            pos: { x: 500, y: 350 }, // Mitten nere
+            title: "Kvarlämnad bok",
             text: "När en grupp bara hör sina egna åsikter upprepas utan mothugg kallas det för en eko...",
-            note: "Automaten: Ett slutet rum där åsikter bara studsar runt."
+            note: "Bordet: Ett slutet rum där åsikter bara studsar runt."
           }
         },
         door: {
           name: "Köksdörren",
-          pos: { x: 770, y: 190 },
+          pos: { x: 740, y: 220 },
           question: "Vad kallas fenomenet där människor bara tar del av åsikter som liknar deras egna, som i en bubbla?",
           answers: ["EKOKAMMARE", "FILTERBUBBLA", "EKOKAMRAR", "FILTERBUBBLOR"],
           hint: "Ett rum där ljudet ekar tillbaka, eller en bubbla av filter."
@@ -235,26 +242,26 @@
         id: 7,
         title: "Idrottens omklädningsrum",
         subtitle: "Hård jargong har lämnat spår. Lås upp materialförrådet.",
-        themeColor: { wallL: "#0284c7", wallR: "#0369a1", floor: "#0f766e" },
+        themeColor: { wallL: "#bae6fd", wallR: "#7dd3fc", floor: "#14b8a6", door: "#0284c7" },
         items: {
           itemA: {
             name: "Omklädningsbänken",
-            pos: { x: 380, y: 310 },
+            pos: { x: 300, y: 360 }, // Vänster nere
             title: "Kladd på träbänken",
             text: "'Tjejer kan ändå inte lira basket' och 'Bete dig inte som en tjej!'. Ord som begränsar hur man får vara.",
             note: "Bänken: Kommentarer som dömer och förminskar utifrån kön."
           },
           itemB: {
-            name: "Taktiktavlan",
-            pos: { x: 260, y: 140 },
-            title: "Lärarens anteckning",
+            name: "Ribbstolen",
+            pos: { x: 520, y: 150 }, // Höger bak
+            title: "Kvarglömd tröja",
             text: "Diskrimineringslagen kap 1: Behandling som är sämre eller kränkande med koppling till kön kallas...",
-            note: "Tavlan: Kränkningar eller fördomar på grund av någons kön."
+            note: "Ribbstolen: Kränkningar eller fördomar på grund av någons kön."
           }
         },
         door: {
           name: "Bollförrådet",
-          pos: { x: 740, y: 180 },
+          pos: { x: 740, y: 220 },
           question: "Vad kallas fördomar, orättvisor eller kränkningar som baseras på personers kön?",
           answers: ["SEXISM"],
           hint: "Börjar på S och handlar om könsdiskriminering."
@@ -264,26 +271,26 @@
         id: 8,
         title: "Elevhälsans rum",
         subtitle: "En plats för stöd och omtanke. Lås upp arkivet.",
-        themeColor: { wallL: "#dcfce7", wallR: "#bbf7d0", floor: "#854d0e" },
+        themeColor: { wallL: "#fef3c7", wallR: "#fde68a", floor: "#854d0e", door: "#451a03" },
         items: {
           itemA: {
-            name: "Broschyrstället",
-            pos: { x: 270, y: 170 },
+            name: "Soffan",
+            pos: { x: 260, y: 280 }, // Vänster mitten
             title: "Broschyren 'Allas Rätt'",
             text: "Vissa personer behöver aldrig oroa sig för att bli trakasserade för sin hudfärg, religion eller läggning.",
-            note: "Broschyren: Vissa föds med fördelar de inte ens tänker på."
+            note: "Soffan: Vissa föds med fördelar de inte ens behöver tänka på."
           },
           itemB: {
-            name: "Skrivbordet",
-            pos: { x: 480, y: 290 },
+            name: "Krukväxten",
+            pos: { x: 500, y: 140 }, // Mitten bak
             title: "Kuratorns anteckning",
             text: "Att ha ett osynligt försprång och slippa diskriminering kallas för att besitta...",
-            note: "Skrivbordet: Osynliga fördelar och förmåner i vardagen."
+            note: "Växten: Osynliga fördelar och förmåner i vardagen."
           }
         },
         door: {
           name: "Arkivskåpet",
-          pos: { x: 740, y: 180 },
+          pos: { x: 740, y: 220 },
           question: "Vad kallas de fördelar eller försprång som personer i majoritetsgrupper ofta tar för givna?",
           answers: ["PRIVILEGIER", "PRIVILEGIUM"],
           hint: "Börjar på P. Innebär särskilda förmåner eller fördelar."
@@ -293,18 +300,18 @@
         id: 9,
         title: "Uppehållsrummet",
         subtitle: "Här syns klassens gemenskap. Lås upp dörren till aulan.",
-        themeColor: { wallL: "#f59e0b", wallR: "#d97706", floor: "#1e293b" },
+        themeColor: { wallL: "#f59e0b", wallR: "#d97706", floor: "#1e293b", door: "#10b981" },
         items: {
           itemA: {
-            name: "Soffan",
-            pos: { x: 380, y: 310 },
-            title: "Brev i soffan",
+            name: "Pingisbordet",
+            pos: { x: 380, y: 360 }, // Mitten fram
+            title: "Brev vid pingisracket",
             text: "'Tack för att du sa ifrån när de garvade åt mig igår. Jag vågade inte själv.'",
-            note: "Soffan: Det krävs mod för att stå upp för någon annan."
+            note: "Pingisbordet: Det krävs mod för att stå upp för någon annan."
           },
           itemB: {
             name: "Affischen",
-            pos: { x: 260, y: 140 },
+            pos: { x: 200, y: 130 }, // Vänster uppe
             title: "Affisch mot mobbning",
             text: "Att våga agera och säga ifrån när någon behandlas illa – även om det känns läskigt – kallas...",
             note: "Affischen: Modet att göra rätt trots risk för eget obehag."
@@ -312,7 +319,7 @@
         },
         door: {
           name: "Auladörren",
-          pos: { x: 740, y: 180 },
+          pos: { x: 740, y: 220 },
           question: "Vad kallas förmågan och modet att stå upp för andra när något känns orättvist?",
           answers: ["CIVILKURAGE"],
           hint: "Ett sammansatt ord som slutar på -kurage (mod)."
@@ -322,18 +329,18 @@
         id: 10,
         title: "Rektorns expedition",
         subtitle: "Det sista låset! Lås upp skolans framtida vision.",
-        themeColor: { wallL: "#1e3a8a", wallR: "#172554", floor: "#713f12" },
+        themeColor: { wallL: "#1e3a8a", wallR: "#172554", floor: "#713f12", door: "#f59e0b" },
         items: {
           itemA: {
             name: "Diplomet på väggen",
-            pos: { x: 280, y: 130 },
+            pos: { x: 260, y: 110 }, // Uppe vänster
             title: "Guldplaketten",
             text: "'En skola där alla känner sig trygga, där lärare och elever har varma relationer och tydliga regler.'",
             note: "Väggen: Trygghet och studiero skapas tillsammans varje dag."
           },
           itemB: {
-            name: "Rektorns pärm",
-            pos: { x: 450, y: 280 },
+            name: "Rektorns Pärm",
+            pos: { x: 450, y: 280 }, // Skrivbordet mitten
             title: "Trygghetsplanen",
             text: "Målet med Olweus och HateLess är att skapa en inkluderande och varm stämning i hela skolan. Ett gott...",
             note: "Skrivbordet: Slutmålet med allt trygghetsarbete: skolans stämning."
@@ -341,7 +348,7 @@
         },
         door: {
           name: "Kassaskåpet",
-          pos: { x: 740, y: 170 },
+          pos: { x: 740, y: 220 },
           question: "Vad är det vi har byggt upp och stärkt genom alla dessa steg? Ett tryggt och inkluderande...",
           answers: ["SKOLKLIMAT", "SKOLMILJÖ"],
           hint: "Sammansatt ord: Skol + ordet som annars handlar om väder och temperatur."
@@ -388,6 +395,7 @@
             setActiveModal(null);
             setInputCode("");
             setErrorMsg("");
+            setShowHint(false);
           } else {
             setGameWon(true);
           }
@@ -395,6 +403,119 @@
           setErrorMsg("Fel kod! Läs ledtrådarna i anteckningsboken noga.");
         }
       };
+
+      // Hjälpfunktion för att rita ut unika möbler per rum
+      const renderRoomDecor = (roomId) => {
+        switch(roomId) {
+          case 1: // Klassrum
+            return (
+              <g>
+                <polygon points="180,110 380,150 380,240 180,200" fill="#f8fafc" stroke="#64748b" strokeWidth="4" />
+                <polygon points="185,115 375,153 375,235 185,197" fill="#ffffff" />
+                <line x1="200" y1="140" x2="350" y2="170" stroke="#0284c7" strokeWidth="3" />
+                <polygon points="340,320 480,350 440,390 300,360" fill="#d97706" stroke="#92400e" strokeWidth="2" />
+                <line x1="340" y1="320" x2="340" y2="390" stroke="#334155" strokeWidth="4" />
+                <line x1="480" y1="350" x2="480" y2="420" stroke="#334155" strokeWidth="4" />
+                <polygon points="200,240 300,260 270,290 170,270" fill="#d97706" stroke="#92400e" strokeWidth="2" />
+              </g>
+            );
+          case 2: // Korridor
+            return (
+              <g>
+                <polygon points="530,220 700,165 700,320 530,375" fill="#0284c7" stroke="#0369a1" strokeWidth="3" />
+                <line x1="585" y1="202" x2="585" y2="357" stroke="#075985" strokeWidth="2" />
+                <line x1="640" y1="184" x2="640" y2="339" stroke="#075985" strokeWidth="2" />
+                <polygon points="200,120 360,150 360,230 200,200" fill="#b45309" stroke="#78350f" strokeWidth="5" />
+                <polygon points="208,126 352,153 352,224 208,197" fill="#fde68a" />
+              </g>
+            );
+          case 3: // Skolgård
+            return (
+              <g>
+                <line x1="220" y1="260" x2="220" y2="120" stroke="#64748b" strokeWidth="8" />
+                <rect x="200" y="100" width="60" height="40" fill="#ffffff" stroke="#ef4444" strokeWidth="3" />
+                <ellipse cx="230" cy="140" rx="15" ry="6" fill="none" stroke="#f97316" strokeWidth="3" />
+                <polygon points="400,340 560,370 540,400 380,370" fill="#78350f" stroke="#451a03" strokeWidth="2" />
+                <circle cx="280" cy="300" r="40" fill="#15803d" />
+                <circle cx="260" cy="270" r="30" fill="#166534" />
+                <circle cx="310" cy="280" r="35" fill="#14532d" />
+              </g>
+            );
+          case 4: // Bibliotek
+            return (
+              <g>
+                <polygon points="180,100 340,130 340,290 180,260" fill="#451a03" stroke="#270d02" strokeWidth="3" />
+                <polygon points="190,140 330,165 330,175 190,150" fill="#78350f" />
+                <polygon points="190,190 330,215 330,225 190,200" fill="#78350f" />
+                <rect x="210" y="152" width="12" height="30" fill="#dc2626" />
+                <rect x="225" y="155" width="10" height="27" fill="#2563eb" />
+                <ellipse cx="500" cy="350" rx="60" ry="30" fill="#0284c7" opacity="0.8" />
+                <polygon points="480,320 540,335 520,360 460,345" fill="#ea580c" />
+              </g>
+            );
+          case 5: // Datasal
+            return (
+              <g>
+                <polygon points="260,220 460,260 420,320 220,280" fill="#475569" stroke="#1e293b" strokeWidth="3" />
+                <polygon points="280,200 330,210 330,240 280,230" fill="#0284c7" stroke="#0f172a" strokeWidth="2" />
+                <polygon points="360,215 410,225 410,255 360,245" fill="#38bdf8" stroke="#0f172a" strokeWidth="2" />
+                <polygon points="420,100 480,110 480,220 420,210" fill="#1e293b" />
+                <circle cx="440" cy="130" r="3" fill="#22c55e" className="animate-ping" />
+                <circle cx="450" cy="132" r="3" fill="#ef4444" />
+              </g>
+            );
+          case 6: // Cafeteria
+            return (
+              <g>
+                <polygon points="180,120 260,135 260,260 180,245" fill="#ef4444" stroke="#991b1b" strokeWidth="2" />
+                <rect x="200" y="150" width="40" height="50" fill="#1e293b" />
+                <polygon points="340,320 500,350 460,390 300,360" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="3" />
+                <circle cx="380" cy="340" r="8" fill="#facc15" />
+                <circle cx="420" cy="350" r="8" fill="#facc15" />
+              </g>
+            );
+          case 7: // Idrottssal
+            return (
+              <g>
+                <line x1="500" y1="140" x2="500" y2="300" stroke="#facc15" strokeWidth="4" />
+                <line x1="550" y1="124" x2="550" y2="284" stroke="#facc15" strokeWidth="4" />
+                <line x1="600" y1="108" x2="600" y2="268" stroke="#facc15" strokeWidth="4" />
+                <polygon points="260,340 400,365 380,390 240,365" fill="#d97706" stroke="#92400e" strokeWidth="2" />
+                <polygon points="320,280 380,290 360,310 300,300" fill="#2563eb" />
+              </g>
+            );
+          case 8: // Elevhälsa
+            return (
+              <g>
+                <polygon points="200,260 320,285 280,310 160,285" fill="#10b981" stroke="#047857" strokeWidth="3" />
+                <polygon points="180,240 300,265 290,270 170,245" fill="#059669" />
+                <polygon points="460,110 520,120 520,170 460,160" fill="#84cc16" />
+                <polygon points="350,330 450,350 420,370 320,350" fill="#d97706" />
+              </g>
+            );
+          case 9: // Uppehållsrum
+            return (
+              <g>
+                <polygon points="300,320 500,360 450,410 250,370" fill="#22c55e" stroke="#ffffff" strokeWidth="3" />
+                <line x1="375" y1="365" x2="375" y2="345" stroke="#475569" strokeWidth="4" />
+                <polygon points="180,120 280,140 280,200 180,180" fill="#facc15" />
+                <circle cx="480" cy="240" r="20" fill="#ef4444" />
+                <circle cx="440" cy="220" r="25" fill="#3b82f6" />
+              </g>
+            );
+          case 10: // Rektor
+            return (
+              <g>
+                <polygon points="340,240 540,280 480,340 280,300" fill="#78350f" stroke="#451a03" strokeWidth="4" />
+                <polygon points="360,220 420,230 400,250 340,240" fill="#1e293b" />
+                <polygon points="200,100 260,110 260,160 200,150" fill="#facc15" stroke="#ca8a04" strokeWidth="2" />
+                <polygon points="560,120 620,100 620,200 560,220" fill="#334155" />
+              </g>
+            );
+          default:
+            return null;
+        }
+      }
 
       if (gameWon) {
         return (
@@ -424,7 +545,7 @@
       return (
         <div className="min-h-screen flex flex-col items-center justify-between p-4 max-w-6xl mx-auto">
           
-          {/* HEADER: Karta & Rumsindikator */}
+          {/* HEADER */}
           <header className="w-full mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-[#172533]/80 backdrop-blur p-4 rounded-2xl border border-slate-700/50">
             <div>
               <div className="flex items-center gap-2">
@@ -437,7 +558,7 @@
               <p className="text-xs text-slate-300">{room.subtitle}</p>
             </div>
 
-            {/* Rums-tracker (10 rutor) */}
+            {/* Rums-tracker */}
             <div className="flex items-center gap-1.5 overflow-x-auto py-1">
               {ROOMS.map((r, idx) => (
                 <div 
@@ -456,231 +577,100 @@
             </div>
           </header>
 
-          {/* ================= DEN ISOMETRISKA SCENEN (SIMS-RUMMET) ================= */}
+          {/* ================= DEN ISOMETRISKA SCENEN ================= */}
           <main className="w-full relative aspect-[16/9] max-h-[520px] bg-[#0c141a] rounded-3xl overflow-hidden border-4 border-slate-800 shadow-2xl">
             
-            <svg viewBox="0 0 1000 560" className="w-full h-full select-none">
-              <defs>
-                {/* Sims Plumbob Symbol */}
-                <g id="plumbob-icon" className="sims-plumbob cursor-pointer">
-                  <polygon points="0,-22 12,0 0,22 -12,0" fill="#22c55e" stroke="#15803d" strokeWidth="2" />
-                  <polygon points="0,-22 0,22 -12,0" fill="#4ade80" opacity="0.6" />
-                  <polygon points="0,-22 12,0 0,22" fill="#86efac" opacity="0.2" />
-                </g>
-
-                <linearGradient id="wallLGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor={room.themeColor.wallL} stopOpacity="0.95" />
-                  <stop offset="100%" stopColor={room.themeColor.wallL} stopOpacity="0.75" />
-                </linearGradient>
-
-                <linearGradient id="wallRGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor={room.themeColor.wallR} stopOpacity="0.95" />
-                  <stop offset="100%" stopColor={room.themeColor.wallR} stopOpacity="0.75" />
-                </linearGradient>
-
-                {/* Golvmönster (Isometriskt rutmönster) */}
-                <pattern id="floorTiles" width="40" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(0)">
-                  <path d="M 0 10 L 20 0 L 40 10 L 20 20 Z" fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
-                </pattern>
-              </defs>
-
-              {/* RUMMETS VÄGGAR OCH GOLV (GENOMSKUREN ISOMETRISK VY) */}
-              {/* Vänster vägg */}
-              <polygon points="120,60 500,140 500,380 120,300" fill="url(#wallLGrad)" stroke="#1e293b" strokeWidth="3" />
-              {/* Höger vägg */}
-              <polygon points="500,140 880,60 880,300 500,380" fill="url(#wallRGrad)" stroke="#1e293b" strokeWidth="3" />
-              {/* Golv */}
-              <polygon points="120,300 500,380 880,300 500,520" fill={room.themeColor.floor} stroke="#1e293b" strokeWidth="4" />
-              {/* Golv-textur */}
-              <polygon points="120,300 500,380 880,300 500,520" fill="url(#floorTiles)" />
-
-              {/* Sockellister för mer Sims-känsla */}
-              <polyline points="120,300 500,380 880,300" fill="none" stroke="#0f172a" strokeWidth="6" opacity="0.4" />
-
-              {/* ================= MÖBLER BASERAT PÅ RUMMET ================= */}
-              
-              {/* RUM 1: Klassrummet */}
-              {room.id === 1 && (
-                <g>
-                  {/* Whiteboard på vänster vägg */}
-                  <polygon points="180,110 380,150 380,240 180,200" fill="#f8fafc" stroke="#64748b" strokeWidth="4" />
-                  <polygon points="185,115 375,153 375,235 185,197" fill="#ffffff" />
-                  <line x1="200" y1="140" x2="350" y2="170" stroke="#0284c7" strokeWidth="3" />
-                  <line x1="200" y1="160" x2="330" y2="185" stroke="#475569" strokeWidth="2" />
-
-                  {/* Bänk i förgrunden */}
-                  <g className="cursor-pointer" onClick={() => handleItemClick('itemB')}>
-                    <polygon points="340,320 480,350 440,390 300,360" fill="#d97706" stroke="#92400e" strokeWidth="2" />
-                    <line x1="340" y1="320" x2="340" y2="390" stroke="#334155" strokeWidth="4" />
-                    <line x1="480" y1="350" x2="480" y2="420" stroke="#334155" strokeWidth="4" />
-                    <line x1="440" y1="390" x2="440" y2="450" stroke="#334155" strokeWidth="4" />
-                    <line x1="300" y1="360" x2="300" y2="430" stroke="#334155" strokeWidth="4" />
-                    {/* Anteckningsbok på bänken */}
-                    <polygon points="360,345 400,355 390,370 350,360" fill="#fef08a" stroke="#ca8a04" strokeWidth="1" />
+            {/* Animeringstagg som triggas om varje gång rummet byts */}
+            <div key={currentRoomIndex} className="w-full h-full animate-room">
+              <svg viewBox="0 0 1000 560" className="w-full h-full select-none">
+                <defs>
+                  {/* Sims Plumbob Symbol */}
+                  <g id="plumbob-icon" className="sims-plumbob cursor-pointer">
+                    <polygon points="0,-22 12,0 0,22 -12,0" fill="#22c55e" stroke="#15803d" strokeWidth="2" />
+                    <polygon points="0,-22 0,22 -12,0" fill="#4ade80" opacity="0.6" />
+                    <polygon points="0,-22 12,0 0,22" fill="#86efac" opacity="0.2" />
                   </g>
+
+                  <linearGradient id="wallLGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor={room.themeColor.wallL} stopOpacity="0.95" />
+                    <stop offset="100%" stopColor={room.themeColor.wallL} stopOpacity="0.75" />
+                  </linearGradient>
+
+                  <linearGradient id="wallRGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor={room.themeColor.wallR} stopOpacity="0.95" />
+                    <stop offset="100%" stopColor={room.themeColor.wallR} stopOpacity="0.75" />
+                  </linearGradient>
+
+                  <pattern id="floorTiles" width="40" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(0)">
+                    <path d="M 0 10 L 20 0 L 40 10 L 20 20 Z" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
+                  </pattern>
+                </defs>
+
+                {/* BAS-RUMMET */}
+                <polygon points="120,60 500,140 500,380 120,300" fill="url(#wallLGrad)" stroke="#1e293b" strokeWidth="3" />
+                <polygon points="500,140 880,60 880,300 500,380" fill="url(#wallRGrad)" stroke="#1e293b" strokeWidth="3" />
+                <polygon points="120,300 500,380 880,300 500,520" fill={room.themeColor.floor} stroke="#1e293b" strokeWidth="4" />
+                <polygon points="120,300 500,380 880,300 500,520" fill="url(#floorTiles)" />
+                <polyline points="120,300 500,380 880,300" fill="none" stroke="#0f172a" strokeWidth="6" opacity="0.4" />
+
+                {/* UNIK MÖBLERING FÖR VARJE RUM */}
+                {renderRoomDecor(room.id)}
+
+                {/* ================= DÖRREN / LÅSET ================= */}
+                <g className="cursor-pointer group" onClick={() => handleItemClick('door')}>
+                  <polygon points="680,150 800,120 800,320 680,350" fill="#1e293b" stroke="#0f172a" strokeWidth="4" />
+                  <polygon points="690,158 790,132 790,314 690,340" fill={room.themeColor.door} className="opacity-90 hover:opacity-100 transition-opacity" />
+                  <polygon points="710,180 770,165 770,220 710,235" fill="#f8fafc" opacity="0.3" />
+
+                  <rect x="725" y="240" width="30" height="26" rx="4" fill="#eab308" stroke="#ca8a04" strokeWidth="2" />
+                  <path d="M 732 240 C 732 228, 748 228, 748 240" fill="none" stroke="#cbd5e1" strokeWidth="4" />
+                  
+                  <rect x="710" y="90" width="60" height="18" rx="3" fill="#dc2626" />
+                  <text x="740" y="103" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">UTGÅNG</text>
+
+                  <circle cx="740" cy="253" r="18" fill="#eab308" opacity="0.25" className="animate-ping" />
                 </g>
-              )}
 
-              {/* RUM 2: Korridoren */}
-              {room.id === 2 && (
-                <g>
-                  {/* Rad med skåp på högra väggen */}
-                  <polygon points="530,220 700,165 700,320 530,375" fill="#0284c7" stroke="#0369a1" strokeWidth="3" />
-                  <line x1="585" y1="202" x2="585" y2="357" stroke="#075985" strokeWidth="2" />
-                  <line x1="640" y1="184" x2="640" y2="339" stroke="#075985" strokeWidth="2" />
-                  {/* Skåpventilations-galler */}
-                  <circle cx="560" cy="245" r="4" fill="#38bdf8" />
-                  <circle cx="615" cy="227" r="4" fill="#38bdf8" />
-                  <circle cx="670" cy="209" r="4" fill="#38bdf8" />
-
-                  {/* Anslagstavla på vänster vägg */}
-                  <polygon points="200,120 360,150 360,230 200,200" fill="#b45309" stroke="#78350f" strokeWidth="5" />
-                  <polygon points="208,126 352,153 352,224 208,197" fill="#fde68a" />
+                {/* ================= PLUMBOBS (INTERAKTIVA PUNKTER) ================= */}
+                <g 
+                  transform={`translate(${room.items.itemA.pos.x}, ${room.items.itemA.pos.y})`} 
+                  onClick={() => handleItemClick('itemA')}
+                  className="cursor-pointer group"
+                >
+                  <use href="#plumbob-icon" />
+                  <text y="35" textAnchor="middle" fill="#ffffff" fontSize="13" fontWeight="bold" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.9))" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    Klicka
+                  </text>
                 </g>
-              )}
 
-              {/* RUM 3: Skolgården */}
-              {room.id === 3 && (
-                <g>
-                  {/* Basketkorg på vänster staket/vägg */}
-                  <line x1="220" y1="260" x2="220" y2="120" stroke="#64748b" strokeWidth="8" />
-                  <rect x="200" y="100" width="60" height="40" fill="#ffffff" stroke="#ef4444" strokeWidth="3" />
-                  <rect x="215" y="115" width="30" height="20" fill="none" stroke="#ef4444" strokeWidth="2" />
-                  {/* Korg */}
-                  <ellipse cx="230" cy="140" rx="15" ry="6" fill="none" stroke="#f97316" strokeWidth="3" />
-                  <path d="M 215 140 L 225 160 L 235 160 L 245 140" fill="none" stroke="#ffffff" strokeWidth="1.5" />
-
-                  {/* Rastbänk */}
-                  <polygon points="400,340 560,370 540,400 380,370" fill="#78350f" stroke="#451a03" strokeWidth="2" />
-                  <polygon points="400,330 560,360 560,370 400,340" fill="#92400e" />
+                <g 
+                  transform={`translate(${room.items.itemB.pos.x}, ${room.items.itemB.pos.y})`} 
+                  onClick={() => handleItemClick('itemB')}
+                  className="cursor-pointer group"
+                >
+                  <use href="#plumbob-icon" />
+                  <text y="35" textAnchor="middle" fill="#ffffff" fontSize="13" fontWeight="bold" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.9))" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    Klicka
+                  </text>
                 </g>
-              )}
 
-              {/* RUM 4: Biblioteket */}
-              {room.id === 4 && (
-                <g>
-                  {/* Stor bokhylla på vänstra väggen */}
-                  <polygon points="180,100 340,130 340,290 180,260" fill="#451a03" stroke="#270d02" strokeWidth="3" />
-                  {/* Hyllplan och böcker */}
-                  <polygon points="190,140 330,165 330,175 190,150" fill="#78350f" />
-                  <polygon points="190,190 330,215 330,225 190,200" fill="#78350f" />
-                  {/* Färgade böcker */}
-                  <rect x="210" y="152" width="12" height="30" fill="#dc2626" />
-                  <rect x="225" y="155" width="10" height="27" fill="#2563eb" />
-                  <rect x="238" y="158" width="14" height="24" fill="#16a34a" />
-                  <rect x="260" y="162" width="12" height="28" fill="#eab308" />
-
-                  {/* Studiebord med lampa */}
-                  <polygon points="340,300 480,330 440,380 300,350" fill="#78350f" stroke="#451a03" strokeWidth="2" />
-                  {/* Bordslampa */}
-                  <ellipse cx="380" cy="305" rx="10" ry="5" fill="#ca8a04" />
-                  <line x1="380" y1="305" x2="380" y2="280" stroke="#ca8a04" strokeWidth="3" />
-                  <polygon points="365,280 395,280 390,265 370,265" fill="#15803d" />
-                </g>
-              )}
-
-              {/* RUM 5: Datasalen */}
-              {room.id === 5 && (
-                <g>
-                  {/* Datorskrivbord & skärmar */}
-                  <polygon points="260,220 460,260 420,320 220,280" fill="#475569" stroke="#1e293b" strokeWidth="3" />
-                  {/* Datorskärm 1 */}
-                  <polygon points="280,200 330,210 330,240 280,230" fill="#0284c7" stroke="#0f172a" strokeWidth="2" />
-                  <line x1="305" y1="235" x2="305" y2="245" stroke="#334155" strokeWidth="4" />
-                  {/* Datorskärm 2 */}
-                  <polygon points="360,215 410,225 410,255 360,245" fill="#38bdf8" stroke="#0f172a" strokeWidth="2" />
-                  <line x1="385" y1="250" x2="385" y2="260" stroke="#334155" strokeWidth="4" />
-                </g>
-              )}
-
-              {/* RUM 6-10 MÖBELGENERISK DEKOR */}
-              {room.id >= 6 && (
-                <g>
-                  {/* Anslag/dekorationer i varierande stil */}
-                  <polygon points="220,120 360,150 360,230 220,200" fill="#334155" stroke="#475569" strokeWidth="3" />
-                  {/* Bord eller lounge-möbel */}
-                  <polygon points="320,300 480,330 430,390 270,360" fill="#475569" stroke="#1e293b" strokeWidth="2" />
-                  <circle cx="370" cy="340" r="15" fill="#64748b" />
-                </g>
-              )}
-
-              {/* ================= DÖRREN / LÅSET (HÖGRA VÄGGEN) ================= */}
-              <g 
-                className="cursor-pointer group" 
-                onClick={() => handleItemClick('door')}
-              >
-                {/* Dörrkarm i 2.5D */}
-                <polygon points="680,150 800,120 800,320 680,350" fill="#1e293b" stroke="#0f172a" strokeWidth="4" />
-                {/* Dörrblad */}
-                <polygon points="690,158 790,132 790,314 690,340" fill="#334155" className="group-hover:fill-slate-600 transition-colors" />
-                
-                {/* Dörrfönster/skylt */}
-                <polygon points="710,180 770,165 770,220 710,235" fill="#0284c7" opacity="0.6" stroke="#38bdf8" strokeWidth="1" />
-
-                {/* Stort Hänglås / Kodlås */}
-                <rect x="725" y="240" width="30" height="26" rx="4" fill="#eab308" stroke="#ca8a04" strokeWidth="2" />
-                <path d="M 732 240 C 732 228, 748 228, 748 240" fill="none" stroke="#cbd5e1" strokeWidth="4" />
-                <circle cx="740" cy="253" r="3" fill="#713f12" />
-
-                {/* Skylt ovanför dörren */}
-                <rect x="710" y="90" width="60" height="18" rx="3" fill="#dc2626" />
-                <text x="740" y="103" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">UTGÅNG</text>
-
-                {/* Pulserande lås-indikator */}
-                <circle cx="740" cy="253" r="18" fill="#eab308" opacity="0.25" className="animate-ping" />
-              </g>
-
-              {/* ================= SIMS PLUMBOB (INTERAKTIVA PUNKTER) ================= */}
-              
-              {/* Punkt A */}
-              <g 
-                transform={`translate(${room.items.itemA.pos.x}, ${room.items.itemA.pos.y})`} 
-                onClick={() => handleItemClick('itemA')}
-                className="cursor-pointer"
-              >
-                <use href="#plumbob-icon" />
-                <text y="35" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="bold" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.9))">
-                  {room.items.itemA.name}
-                </text>
-              </g>
-
-              {/* Punkt B */}
-              <g 
-                transform={`translate(${room.items.itemB.pos.x}, ${room.items.itemB.pos.y})`} 
-                onClick={() => handleItemClick('itemB')}
-                className="cursor-pointer"
-              >
-                <use href="#plumbob-icon" />
-                <text y="35" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="bold" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.9))">
-                  {room.items.itemB.name}
-                </text>
-              </g>
-
-              {/* Dörr etikett */}
-              <text x="740" y="380" textAnchor="middle" fill="#facc15" fontSize="13" fontWeight="bold" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.9))">
-                Klicka för att låsa upp
-              </text>
-
-            </svg>
+              </svg>
+            </div>
           </main>
 
-          {/* ================= BOTTENPANEL: ANTECKNINGSBOK & HJÄLP ================= */}
+          {/* ================= BOTTENPANEL ================= */}
           <footer className="w-full mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
-            
-            {/* Anteckningsboken (Tar 2 av 3 kolumner) */}
             <div className="md:col-span-2 bg-[#fdfbf7] text-slate-800 rounded-2xl p-4 shadow-xl border-l-[12px] border-amber-600 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
               <div>
                 <div className="flex items-center justify-between border-b border-amber-200 pb-1 mb-2">
-                  <h3 className="font-bold text-xs uppercase tracking-wider text-amber-900">
-                    Elevens Anteckningsbok – {room.title}
-                  </h3>
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-amber-900">Elevens Anteckningsbok</h3>
                   <span className="text-[11px] text-amber-700">Sparar automatiskt</span>
                 </div>
                 
                 <ul className="space-y-1.5 font-handwriting text-xl text-slate-900 leading-snug">
                   {discoveredItems.size === 0 ? (
                     <li className="text-slate-400 italic text-lg list-none pt-2">
-                      Klicka på de gröna Sims-diamanterna (Plumbobs) i rummet för att hitta ledtrådar till lösenordet...
+                      Klicka på de gröna Sims-diamanterna (Plumbobs) i rummet för att hitta ledtrådar...
                     </li>
                   ) : (
                     Array.from(discoveredItems).map((key) => (
@@ -692,14 +682,8 @@
                   )}
                 </ul>
               </div>
-
-              <div className="text-[11px] text-slate-400 pt-2 border-t border-amber-100 flex justify-between">
-                <span>Hitta alla ledtrådar för att lista ut koden.</span>
-                <span>{discoveredItems.size} av 2 upptäckta</span>
-              </div>
             </div>
 
-            {/* Hjälp & Fastnat-panel */}
             <div className="bg-[#172533] rounded-2xl p-4 shadow-xl border border-slate-700 flex flex-col justify-between">
               <div>
                 <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-1.5">
@@ -723,47 +707,31 @@
                 </button>
               )}
             </div>
-
           </footer>
 
-          {/* ================= POPUP / MODAL ================= */}
+          {/* ================= POPUP ================= */}
           {activeModal && (
             <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
               <div className="bg-[#172533] border-2 border-slate-600 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl animate-note">
-                
-                {/* Modal Header */}
                 <div className="px-5 py-3.5 bg-slate-800/80 border-b border-slate-700 flex justify-between items-center">
                   <h3 className="font-bold text-white text-sm flex items-center gap-2">
                     {activeModal === 'door' ? '🔐 ' + room.door.name : '🔍 ' + room.items[activeModal].title}
                   </h3>
-                  <button 
-                    onClick={handleCloseModal}
-                    className="text-slate-400 hover:text-white text-xs px-2 py-1 bg-slate-700 rounded-md"
-                  >
-                    Stäng ✕
-                  </button>
+                  <button onClick={handleCloseModal} className="text-slate-400 hover:text-white text-xs px-2 py-1 bg-slate-700 rounded-md">Stäng ✕</button>
                 </div>
-
-                {/* Modal Innehåll */}
                 <div className="p-6">
                   {activeModal !== 'door' ? (
                     <div>
                       <div className="bg-[#fdfbf7] text-slate-800 p-5 rounded-xl mb-5 font-handwriting text-2xl leading-snug shadow-inner border border-amber-200">
                         "{room.items[activeModal].text}"
                       </div>
-                      <button 
-                        onClick={handleCloseModal}
-                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-all shadow-md"
-                      >
+                      <button onClick={handleCloseModal} className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-all shadow-md">
                         Skriv in i anteckningsboken
                       </button>
                     </div>
                   ) : (
                     <div>
-                      <p className="text-slate-200 text-sm mb-4 leading-relaxed font-medium">
-                        {room.door.question}
-                      </p>
-
+                      <p className="text-slate-200 text-sm mb-4 leading-relaxed font-medium">{room.door.question}</p>
                       <form onSubmit={handleUnlock} className="space-y-3">
                         <input 
                           type="text" 
@@ -773,24 +741,14 @@
                           autoFocus
                           className="w-full py-3 px-4 bg-slate-900 border-2 border-slate-600 focus:border-emerald-500 rounded-xl text-center text-lg font-black text-white tracking-widest uppercase focus:outline-none"
                         />
-
-                        {errorMsg && (
-                          <p className="text-xs text-rose-400 font-bold text-center animate-shake">
-                            {errorMsg}
-                          </p>
-                        )}
-
-                        <button 
-                          type="submit"
-                          className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm uppercase tracking-wider rounded-xl transition-all shadow-lg"
-                        >
+                        {errorMsg && <p className="text-xs text-rose-400 font-bold text-center animate-shake">{errorMsg}</p>}
+                        <button type="submit" className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm uppercase tracking-wider rounded-xl transition-all shadow-lg">
                           Lås upp dörren
                         </button>
                       </form>
                     </div>
                   )}
                 </div>
-
               </div>
             </div>
           )}
