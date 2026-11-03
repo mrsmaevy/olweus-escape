@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skolans Escape Room – Moraliska Dilemman</title>
+  <title>Skolans Escape Room – 10 Rum mot Mobbning</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Caveat för anteckningsboken & ren sans-serif för gränssnittet -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- React & Babel via CDN -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -22,22 +22,25 @@
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .font-handwriting { font-family: 'Caveat', cursive; }
 
+    /* Mjukt roterande och blinkande stjärnglitter precis som i originalet */
     @keyframes sparkle-twinkle {
-      0%, 100% { opacity: 0.25; transform: scale(0.8) rotate(0deg); }
+      0%, 100% { opacity: 0.2; transform: scale(0.7) rotate(0deg); }
       50% { opacity: 1; transform: scale(1.3) rotate(45deg); filter: drop-shadow(0 0 8px #fef08a); }
     }
     .sparkle-icon {
-      animation: sparkle-twinkle 1.8s ease-in-out infinite;
+      animation: sparkle-twinkle 2s ease-in-out infinite;
       transform-origin: center;
       pointer-events: none;
     }
 
+    /* Animation för rummets övergång */
     @keyframes room-fade-in {
-      from { opacity: 0; transform: scale(0.98); }
+      from { opacity: 0; transform: scale(0.985); }
       to { opacity: 1; transform: scale(1); }
     }
-    .animate-room-change { animation: room-fade-in 0.35s ease-out forwards; }
+    .animate-room-change { animation: room-fade-in 0.4s ease-out forwards; }
 
+    /* Skakning vid fel svar */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20% { transform: translateX(-6px); }
@@ -48,180 +51,123 @@
     .animate-shake { animation: shake 0.4s ease-in-out; }
   </style>
 </head>
-<body class="bg-[#0b1319] text-slate-100 min-h-screen selection:bg-yellow-400 selection:text-slate-900">
+<body class="bg-[#091813] text-slate-100 min-h-screen selection:bg-yellow-400 selection:text-slate-900 flex flex-col justify-between p-3 md:p-6">
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState } = React;
 
-    // --- 10 SKOLMILJÖER MED ÄKTA MORALISKA DILEMMAN ---
+    // --- 10 SKOLRUM MED DETALJER, DILEMMAN OCH LEDTRÅDAR ---
     const ROOMS = [
       {
         id: 1,
         title: "Klassrum 8B",
-        subtitle: "Ett 'skämt' har gått för långt. Lös dilemmat för att få klassrumsnyckeln.",
+        subtitle: "Undersök klassrummet. Klicka på sakerna som glittrar i rummet!",
         doorLabel: "KLASSRUMMET",
-        keyItemName: "Klassrumsnyckeln",
-        clueObject: {
-          name: "Whiteboarden",
-          pos: { x: 260, y: 130 },
-          title: "Skollagen på whiteboarden",
-          text: "'Skollagen 6 kap: Alla elever har rätt till en trygg miljö fri från kränkningar. Yttrandefrihet skyddar åsikter, men inte rätten att förnedra andras identitet.'",
+        keyName: "Klassrumsnyckeln",
+        sparkles: [
+          { x: 340, y: 140, target: 'clue' },
+          { x: 440, y: 340, target: 'dilemma' },
+          { x: 710, y: 220, target: 'door' }
+        ],
+        clue: {
+          title: "Lappen på whiteboarden",
+          text: "Läraren har skrivit: 'I en demokrati har vi yttrandefrihet, men lagen drar en skarp gräns när ord kränker någons person eller grupptillhörighet. Rätten att tycka ger ingen rätt att trycka ner!'",
           notebook: "1. Whiteboarden: Yttrandefrihet ger oss inte rätt att kränka andras identitet."
         },
-        dilemmaObject: {
-          name: "Bänken med lappen",
-          pos: { x: 450, y: 340 },
-          title: "Dilemma: Skämtet på lektionen",
-          situation: "Under en genomgång drar en kille i klassen ett elakt skämt om en klasskamrats bakgrund och tro. Flera skrattar nervöst. Killen säger högt: 'Man får väl skämta, vi har faktiskt yttrandefrihet i det här landet!' Klasskamraten tittar ner i bänken och ser ledsen ut.",
-          question: "Hur väljer du att agera i den här situationen?",
+        dilemma: {
+          title: "Dilemma: Skämtet i bänken",
+          situation: "Under lektionen drar en kille ett elakt skämt om en klasskamrats bakgrund och tro. Flera skrattar nervöst. Killen säger: 'Man får väl skämta, vi har faktiskt yttrandefrihet!' Den utsatta eleven tittar ner i bänken och ser ledsen ut.",
+          question: "Vad är det bästa sättet att agera här?",
           options: [
-            {
-              id: 'A',
-              text: "Skratta med lite grann så att du inte framstår som tråkig eller blir nästa måltavla.",
-              isCorrect: false,
-              feedback: "Om du skrattar med blir du en 'medlöpare' enligt Olweus mobbningsring. Det ger förövaren tyst godkännande att fortsätta."
-            },
-            {
-              id: 'B',
-              text: "Säga lugnt ifrån: 'Det där handlar inte om yttrandefrihet, det är bara taskigt och inte okej.'",
-              isCorrect: true,
-              feedback: "Helt rätt val! Att markera gränsen sakligt bryter den negativa jargongen och visar stöd för den som utsätts. Bänklocket glider upp och du hittar Klassrumsnyckeln!"
-            },
-            {
-              id: 'C',
-              text: "Titta bort och tänka att läraren får lösa det om hen vill.",
-              isCorrect: false,
-              feedback: "Att inte göra någonting alls gör dig till en passiv åskådare. Mobbning frodas när omgivningen låtsas som att det regnar."
-            }
+            { id: 'A', text: "Skratta med lite grann så att du inte gör stämningen konstig.", isCorrect: false, feedback: "Att skratta med gör dig till en 'medlöpare' i Olweus mobbningsring och förstärker kränkningen." },
+            { id: 'B', text: "Säga lugnt ifrån: 'Det där handlar inte om yttrandefrihet, det är bara taskigt och inte okej.'", isCorrect: true, feedback: "Klockrent civilkurage! Du bryter den negativa jargongen och stöttar den utsatta. Bänklocket glider upp och du hittar Klassrumsnyckeln!" },
+            { id: 'C', text: "Titta bort och låtsas som att du inte hörde.", isCorrect: false, feedback: "Att titta bort gör dig till en passiv åskådare. Mobbning växer när ingen reagerar." }
           ],
-          rewardNote: "2. Dilemmat löst: Du visade civilkurage och fick Klassrumsnyckeln!"
+          rewardNote: "2. Dilemmat löst: Du visade civilkurage och fann Klassrumsnyckeln!"
         }
       },
       {
         id: 2,
         title: "Elevskåpens korridor",
-        subtitle: "Grupptryck styr vem som får vara med. Lås upp branddörren.",
+        subtitle: "De blå skåpen ekar tomt. Hitta vaktmästarens passersedel för att gå vidare.",
         doorLabel: "BRANDDÖRR",
-        keyItemName: "Passersedeln",
-        clueObject: {
-          name: "Anslagstavlan",
-          pos: { x: 230, y: 170 },
-          title: "Post-it om normer",
-          text: "'Normer är osynliga regler i gruppen. När normen kräver att alla måste klä sig likadant eller dissa vissa personer skapas utanförskap.'",
-          notebook: "1. Anslagstavlan: Destruktiva normer skapar utanförskap och osäkerhet."
+        keyName: "Passersedeln",
+        sparkles: [
+          { x: 230, y: 160, target: 'clue' },
+          { x: 450, y: 200, target: 'dilemma' },
+          { x: 710, y: 220, target: 'door' }
+        ],
+        clue: {
+          title: "Post-it på anslagstavlan",
+          text: "'Normer är osynliga regler som styr hur vi förväntas se ut och vara i klassen. När normen tvingar alla att vara likadana skapas utanförskap.'",
+          notebook: "1. Anslagstavlan: Osynliga normer och regler kan tvinga fram utanförskap."
         },
-        dilemmaObject: {
-          name: "Skåp 14",
-          pos: { x: 520, y: 220 },
+        dilemma: {
           title: "Dilemma: Grupptryck vid skåpen",
-          situation: "Ditt kompisgäng står vid skåpen och viskar om en ny elev som har en annorlunda klädstil. Ledaren i gänget säger: 'Ingen får snacka med hen på rasten, fattar ni? Hänger man med hen är man ute ur vårt gäng.' Alla verkar tycka det känns obekvämt men nickar med.",
-          question: "Vad gör du när gänget ställer detta ultimatum?",
+          situation: "Ditt kompisgäng står vid skåp 14 och viskar om en ny elev: 'Ingen får snacka med hen på rasten! Pratar man med hen är man ute ur vårt gäng.' Alla verkar tycka det känns obekvämt men nickar med.",
+          question: "Hur bemöter du gängets krav?",
           options: [
-            {
-              id: 'A',
-              text: "Lyda gänget. Du vill verkligen inte riskera din egen status och bli utesluten själv.",
-              isCorrect: false,
-              feedback: "Här styr rädslan för att förlora status. Det är precis så här destruktiva normer och negativt grupptryck får makt över en klass."
-            },
-            {
-              id: 'B',
-              text: "Säga: 'Lägg av, var och en får väl klä sig som de vill. Jag tänker inte frysa ut någon.'",
-              isCorrect: true,
-              feedback: "Klockrent agerat! När en person vågar ifrågasätta grupptrycket vågar ofta fler följa efter. Skåp 14 öppnas och du får vaktmästarens passersedel!"
-            },
-            {
-              id: 'C',
-              text: "Vara tyst vid skåpen, men undvika den nya eleven på rasten så ingen ser dig.",
-              isCorrect: false,
-              feedback: "Det här kallas 'pluralistisk ignorans' – du håller egentligen inte med, men ditt beteende gör att utfrysningen fortsätter."
-            }
+            { id: 'A', text: "Lyda gänget så att du inte själv blir utfryst och tappar kompisar.", isCorrect: false, feedback: "Här styr rädslan för att förlora status. Det är så destruktivt grupptryck får makt." },
+            { id: 'B', text: "Säga ifrån: 'Lägg av, var och en får väl vara som de vill. Jag tänker inte frysa ut någon.'", isCorrect: true, feedback: "Modigt och rätt! När en person ifrågasätter grupptrycket vågar ofta andra följa efter. Skåp 14 öppnas och du får Passersedeln!" },
+            { id: 'C', text: "Vara tyst men undvika den nya eleven så att ingen ser dig.", isCorrect: false, feedback: "Det här kallas passivt medhåll – du gör som gänget vill fast du vet att det är fel." }
           ],
-          rewardNote: "2. Dilemmat löst: Du bröt grupptrycket och fann Passersedeln!"
+          rewardNote: "2. Dilemmat löst: Du bröt grupptrycket och fick Passersedeln!"
         }
       },
       {
         id: 3,
         title: "Skolgården",
-        subtitle: "En cirkel har bildats på skolgården. Lås upp grinden.",
+        subtitle: "Grinden till elevuppehållet är låst. Undersök skolgården.",
         doorLabel: "SKOLGRINDEN",
-        keyItemName: "Grindnyckeln",
-        clueObject: {
-          name: "Basketkorgen",
-          pos: { x: 230, y: 190 },
-          title: "Olweus mobbningsring",
-          text: "'Mobbningsringen: Mobbaren är beroende av publiken. När åskådare filmar eller skrattar känner sig mobbaren stark. När åskådare hämtar hjälp upphör mobbningen oftast direkt.'",
-          notebook: "1. Basketplanen: Mobbaren får sin kraft från publiken som tittar på."
+        keyName: "Grindnyckeln",
+        sparkles: [
+          { x: 230, y: 170, target: 'clue' },
+          { x: 480, y: 340, target: 'dilemma' },
+          { x: 710, y: 220, target: 'door' }
+        ],
+        clue: {
+          title: "Basketplanen & Olweus",
+          text: "'I Olweus mobbningsring är mobbaren helt beroende av sin publik. När elever filmar eller står tysta runt omkring får förövaren makt. När någon bryter cirkeln och hämtar en vuxen upphör mobbningen oftast direkt.'",
+          notebook: "1. Skolgården: Mobbaren får sin kraft från publiken som tittar på."
         },
-        dilemmaObject: {
-          name: "Rastbänken",
-          pos: { x: 500, y: 330 },
+        dilemma: {
           title: "Dilemma: Skärmarna runt bråket",
-          situation: "Bakom cykelställen har en ring av elever bildats. Två äldre elever knuffar en kille från sjuan och ropar elaka ord. Flera i ringen har tagit upp sina mobiler och filmar för att lägga upp på Snapchat och TikTok. Ingen går emellan.",
-          question: "Vad är det mest ansvarsfulla du kan göra?",
+          situation: "Bakom cykelställen har en ring av elever bildats runt ett bråk. Flera elever har tagit upp sina mobiler och filmar för att lägga upp på Snapchat. Ingen går emellan.",
+          question: "Vad är den mest ansvarsfulla handlingen?",
           options: [
-            {
-              id: 'A',
-              text: "Ta upp din egen mobil och börja filma för att 'dokumentera som bevis'.",
-              isCorrect: false,
-              feedback: "Att filma förnedrande händelser förstärker offrets skam och eldar på situationen. Det kan dessutom vara ett lagbrott (olaga integritetsintrång)."
-            },
-            {
-              id: 'B',
-              text: "Omedelbart springa till närmaste rastvärd/lärare och slå larm så att vuxna kan ingripa säkert.",
-              isCorrect: true,
-              feedback: "Helt rätt! Civilkurage handlar inte om att riskera fysiskt våld mot sig själv, utan om att snabbt bryta åskådarrollen och hämta vuxna. Du hittar Grindnyckeln på bänken!"
-            },
-            {
-              id: 'C',
-              text: "Bara stå kvar och titta, det har ju inget med dig att göra.",
-              isCorrect: false,
-              feedback: "Att vara en passiv åskådare ger mobbarna tyst godkännande och får den utsatte att känna sig helt övergiven av alla."
-            }
+            { id: 'A', text: "Ta upp din egen mobil och börja filma för att dokumentera.", isCorrect: false, feedback: "Att filma förnedrande händelser förstärker offrets utsatthet och eldar på situationen." },
+            { id: 'B', text: "Omedelbart springa till närmaste rastvärd/lärare så att vuxna kan ingripa säkert.", isCorrect: true, feedback: "Exakt rätt! Civilkurage handlar om att bryta åskådarrollen och hämta hjälp direkt. Du hittar Grindnyckeln på rastbänken!" },
+            { id: 'C', text: "Stå kvar och titta tyst, det har ju inget med dig att göra.", isCorrect: false, feedback: "Att stå tyst ger förövarna tyst godkännande och ökar offrets känsla av ensamhet." }
           ],
-          rewardNote: "2. Dilemmat löst: Du hämtade hjälp och säkrade Grindnyckeln!"
+          rewardNote: "2. Dilemmat löst: Du hämtade en vuxen och säkrade Grindnyckeln!"
         }
       },
       {
         id: 4,
         title: "Skolbiblioteket",
-        subtitle: "Dolda fördomar skapar sprickor. Lås upp arkivdörren.",
+        subtitle: "Lugnet bland böckerna döljer viktiga svar. Lås upp arkivdörren.",
         doorLabel: "ARKIVDÖRR",
-        keyItemName: "Arkivkoden: RESPEKT",
-        doorRequiresKey: false,
+        keyName: "Koden: RESPEKT",
         doorCode: "RESPEKT",
-        clueObject: {
-          name: "Bokhyllan",
-          pos: { x: 280, y: 190 },
-          title: "Boken om mikroaggressioner",
-          text: "'Mikroaggressioner är vardagliga kommentarer som uttrycks utan elak avsikt men som bygger på fördomar och ständigt påminner mottagaren om att hen inte ses som en självklar del av gruppen.'",
-          notebook: "1. Bokhyllan: Även omedvetna fördomar kan såra djupt."
+        sparkles: [
+          { x: 260, y: 170, target: 'clue' },
+          { x: 500, y: 330, target: 'dilemma' },
+          { x: 710, y: 220, target: 'door' }
+        ],
+        clue: {
+          title: "Boken om likabehandling",
+          text: "'Mikroaggressioner är vardagliga kommentarer som uttrycks utan elak avsikt men som bygger på fördomar och ständigt påminner mottagaren om att hen ses som annorlunda.'",
+          notebook: "1. Biblioteket: Även omedvetna fördomar och nålstick kan såra djupt."
         },
-        dilemmaObject: {
-          name: "Läsbordet",
-          pos: { x: 540, y: 310 },
+        dilemma: {
           title: "Dilemma: Den 'snälla' kommentaren",
-          situation: "Under ett grupparbete i biblioteket vänder sig en kompis till Aisha, som är född och uppvuxen i Sverige, och säger förvånat: 'Gud vad otroligt ren och bra svenska du talar! Vart kommer du ifrån på riktigt? Får man känna på ditt hår?' Aisha tystnar och ser mycket besvärad ut.",
+          situation: "Under ett grupparbete säger en kompis till Aisha, som är född och uppvuxen i Sverige: 'Gud vad otroligt bra svenska du talar! Vart kommer du ifrån på riktigt?' Aisha tystnar och ser mycket besvärad ut.",
           question: "Hur hanterar du situationen bäst?",
           options: [
-            {
-              id: 'A',
-              text: "Säga: 'Hon menade det ju som en komplimang Aisha, ta inte allt så allvarligt!'",
-              isCorrect: false,
-              feedback: "Detta förminskar Aishas upplevelse. Även om avsikten inte var elak blir effekten att Aisha pekas ut som en främling."
-            },
-            {
-              id: 'B',
-              text: "Förklara vänligt för kompisen: 'Aisha är född här, och det blir jobbigt att ständigt bli behandlad som annorlunda fast man menar väl.'",
-              isCorrect: true,
-              feedback: "Utmärkt reflekterat! Du lyfter fram mikroaggressionens mekanism utan att attackera kompisen. Facket öppnas och visar koden: RESPEKT!"
-            },
-            {
-              id: 'C',
-              text: "Börja skratta och fråga samma sak för att lätta upp stämningen.",
-              isCorrect: false,
-              feedback: "Detta förstärker bara utanförskapet och visar bristande empati och perspektivtagande."
-            }
+            { id: 'A', text: "Säga: 'Hon menade det som en komplimang, ta inte allt så allvarligt!'", isCorrect: false, feedback: "Detta förminskar Aishas upplevelse och osynliggör hur tröttsamt det är att alltid pekas ut som annorlunda." },
+            { id: 'B', text: "Förklara lugnt för kompisen: 'Aisha är född här, och det blir jobbigt att ständigt bli ifrågasatt fast man menar väl.'", isCorrect: true, feedback: "Spot on! Du lyfter fram mikroaggressionens mekanism med värme. Lönnfacket öppnas och visar koden: RESPEKT!" },
+            { id: 'C', text: "Börja skratta och ställa samma fråga för att lätta upp stämningen.", isCorrect: false, feedback: "Detta förstärker bara utanförskapet och visar bristande empati." }
           ],
           rewardNote: "2. Dilemmat löst: Koden till dörren är RESPEKT."
         }
@@ -229,43 +175,28 @@
       {
         id: 5,
         title: "Datasalen (IKT)",
-        subtitle: "Chatten spårar ur på nätet. Lås upp serverdörren.",
+        subtitle: "Skärmarna lyser blått. Någon har glömt en öppen chatt.",
         doorLabel: "SERVERDÖRR",
-        keyItemName: "Serverkoden: LOGOFF",
-        doorRequiresKey: false,
+        keyName: "Koden: LOGOFF",
         doorCode: "LOGOFF",
-        clueObject: {
-          name: "Serverracket",
-          pos: { x: 520, y: 170 },
-          title: "Nätetik & Spärrar",
+        sparkles: [
+          { x: 480, y: 170, target: 'clue' },
+          { x: 260, y: 240, target: 'dilemma' },
+          { x: 710, y: 220, target: 'door' }
+        ],
+        clue: {
+          title: "Nätetik på serverracket",
           text: "'På nätet försvinner ansiktsuttryck och reaktioner (Online Disinhibition Effect). Det gör att många skriver grövre saker än i verkligheten. Att säga ifrån i en chatt kräver stort mod.'",
-          notebook: "1. Serverracket: Bakom skärmen försvinner spärrarna snabbare."
+          notebook: "1. Datasalen: Bakom skärmen försvinner spärrarna snabbare."
         },
-        dilemmaObject: {
-          name: "Datorskärmen",
-          pos: { x: 270, y: 240 },
-          title: "Dilemma: Smygbilden i klasschatten",
-          situation: "I klassens inofficiella Snapchat-chatt lägger någon upp en smygtagen bild på en klasskamrat som har somnat i datasalen med öppen mun. Bilden har fått elaka ritsymboler och hånas med skratt-emojis. Några skriver: 'Haha fyfan vad ful!' Eleven har ännu inte sett bilden.",
+        dilemma: {
+          title: "Dilemma: Smygbilden i chatten",
+          situation: "I klassens inofficiella Snapchat-grupp lägger någon upp en smygtagen bild på en elev som råkat somna vid datorn. Bilden hånas med elaka ritsymboler. Flera skriver: 'Haha fyfan vad ful!' Eleven har ännu inte sett bilden.",
           question: "Hur reagerar du i chatten?",
           options: [
-            {
-              id: 'A',
-              text: "Skicka en skratt-emoji för att visa att du har humor och hänger med i flödet.",
-              isCorrect: false,
-              feedback: "Genom att gilla eller skratta eldar du på näthatet och ökar spridningen av kränkningen."
-            },
-            {
-              id: 'B',
-              text: "Skriva i chatten: 'Radera bilden, det där är inte schysst mot hen!' och skriva privat till personen och stötta.",
-              isCorrect: true,
-              feedback: "Lysande nätcivilkurage! När någon sätter ner foten offentligt i en chatt hejdas spridningen omedelbart. Servern låses upp och visar koden: LOGOFF!"
-            },
-            {
-              id: 'C',
-              text: "Ta en skärmdump och skicka vidare till dina kompisar i en annan skola.",
-              isCorrect: false,
-              feedback: "Att sprida kränkande bilder vidare förvärrar skadan och är ett direkt brott mot personens integritet."
-            }
+            { id: 'A', text: "Skicka en skratt-emoji för att visa att du har humor och hänger med i flödet.", isCorrect: false, feedback: "Att gilla eller skratta eldar på näthatet och gör skadan ännu större för eleven." },
+            { id: 'B', text: "Skriva i chatten: 'Radera bilden, det där är inte schysst!' och skriva privat till eleven och stötta.", isCorrect: true, feedback: "Lysande nätcivilkurage! När någon sätter ner foten offentligt hejdas spridningen snabbt. Servern låses upp och visar koden: LOGOFF!" },
+            { id: 'C', text: "Ta en skärmdump och skicka vidare till kompisar i en annan klass.", isCorrect: false, feedback: "Att sprida kränkande bilder vidare förvärrar skadan och är ett lagbrott." }
           ],
           rewardNote: "2. Dilemmat löst: Koden till serverdörren är LOGOFF."
         }
@@ -273,41 +204,27 @@
       {
         id: 6,
         title: "Skolcafeterian",
-        subtitle: "Rykten sprids vid borden. Hitta köksnyckeln.",
+        subtitle: "Rykten sprids runt borden. Hitta köksnyckeln.",
         doorLabel: "KÖKSDÖRR",
-        keyItemName: "Köksnyckeln",
-        clueObject: {
-          name: "Cafébordet",
-          pos: { x: 500, y: 320 },
+        keyName: "Köksnyckeln",
+        sparkles: [
+          { x: 470, y: 320, target: 'clue' },
+          { x: 220, y: 210, target: 'dilemma' },
+          { x: 710, y: 220, target: 'door' }
+        ],
+        clue: {
           title: "Källkritik & Rykten",
-          text: "'En ekokammare uppstår när en grupp upprepar påståenden utan att ifrågasätta om de är sanna. Rykten kan förstöra en människas hela skolgång.'",
-          notebook: "1. Bordet: Rykten i slutna grupper sprider falskheter och hat."
+          text: "'En ekokammare uppstår när en grupp upprepar samma rykten om och om igen utan att ifrågasätta om det är sant. Falska rykten kan ödelägga en människas skolgång.'",
+          notebook: "1. Cafeterian: Rykten i slutna grupper sprider lögner och otrygghet."
         },
-        dilemmaObject: {
-          name: "Dryckesautomaten",
-          pos: { x: 220, y: 210 },
-          title: "Dilemma: Ryktesspridningen",
-          situation: "Vid cafébordet berättar en elev med dramatisk röst ett vilt rykte om att en kille i nian har begått ett brott och att 'alla vet att hans familj är kriminell'. Flera runt bordet lyssnar hungrigt och börjar genast spekulera och prata om att sprida det vidare på TikTok.",
-          question: "Vad är det bästa sättet att bemöta ryktet?",
+        dilemma: {
+          title: "Dilemma: Ryktet vid bordet",
+          situation: "Vid cafébordet berättar en elev ett grovt rykte om att en kille i nian har begått ett brott och att 'alla vet att hela hans släkt är kriminell'. Flera lyssnar hungrigt och pratar om att sprida det vidare på TikTok.",
+          question: "Vad är det bästa sättet att agera?",
           options: [
-            {
-              id: 'A',
-              text: "Fråga källkritiskt: 'Hur vet du det där egentligen? Det låter som ett påhittat rykte som skadar hans familj.'",
-              isCorrect: true,
-              feedback: "Helt rätt tänkt! Att ifrågasätta källan och vägra svälja ryktet punkterar ekokammaren direkt. Automaten ger ifrån sig ett klick och spottar ut Köksnyckeln!"
-            },
-            {
-              id: 'B',
-              text: "Lägga till egna detaljer som du har hört för att göra historien ännu mer spännande.",
-              isCorrect: false,
-              feedback: "Att spä på rykten kallas förtal och skapar enorm otrygghet och fientlighet på skolan."
-            },
-            {
-              id: 'C',
-              text: "Sitta tyst och sedan viska vidare ryktet till dina närmaste vänner på nästa lektion.",
-              isCorrect: false,
-              feedback: "Även om du inte startade ryktet blir du en länk i kedjan som sprider lögner och hat vidare."
-            }
+            { id: 'A', text: "Fråga källkritiskt: 'Hur vet du det där egentligen? Det låter som ett elakt rykte som skadar hans familj.'", isCorrect: true, feedback: "Helt rätt tänkt! Att ifrågasätta källan och vägra sprida rykten punkterar ekokammaren. Automaten spottar ut Köksnyckeln!" },
+            { id: 'B', text: "Lägga till egna detaljer som du har hört för att verka insatt.", isCorrect: false, feedback: "Att spä på rykten kallas förtal och skapar stor otrygghet i skolan." },
+            { id: 'C', text: "Sitta tyst och sedan viska ryktet till dina vänner på nästa lektion.", isCorrect: false, feedback: "Då blir du en länk i kedjan som sprider lögner vidare." }
           ],
           rewardNote: "2. Dilemmat löst: Du stoppade ryktet och fick Köksnyckeln!"
         }
@@ -317,41 +234,27 @@
         title: "Idrottshallen",
         subtitle: "Sexistiska kommentarer i omklädningsrummet. Lås upp förrådet.",
         doorLabel: "BOLLFÖRRÅD",
-        keyItemName: "Förrådsnyckeln",
-        clueObject: {
-          name: "Taktiktavlan",
-          pos: { x: 510, y: 160 },
+        keyName: "Förrådsnyckeln",
+        sparkles: [
+          { x: 480, y: 160, target: 'clue' },
+          { x: 260, y: 350, target: 'dilemma' },
+          { x: 710, y: 220, target: 'door' }
+        ],
+        clue: {
           title: "Diskrimineringslagen",
-          text: "'Diskrimineringslagen förbjuder trakasserier på grund av kön. Jargong som framställer tjejer eller killar som mindre värda skapar en giftig och otrygg miljö.'",
-          notebook: "1. Taktiktavlan: Sexistisk jargong bryter mot diskrimineringslagen."
+          text: "'Diskrimineringslagen förbjuder trakasserier på grund av kön. Jargong som framställer tjejer eller killar som sämre skapar en otrygg och nedvärderande miljö.'",
+          notebook: "1. Idrottshallen: Sexistisk jargong bryter mot diskrimineringslagen."
         },
-        dilemmaObject: {
-          name: "Gymnastikbänken",
-          pos: { x: 300, y: 350 },
+        dilemma: {
           title: "Dilemma: Laguttagningen",
-          situation: "Klassen ska spela fotboll. Två killar som väljer lag suckar demonstrativt när en tjej väljs: 'Men suck, tjejer kan ju inte sparka på en boll, vi förlorar direkt!' Flera killar flinar och tjejen backar undan med armarna i kors.",
+          situation: "Klassen ska spela fotboll. Två killar suckar demonstrativt när en tjej väljs till laget: 'Suck, tjejer kan ju inte sparka på en boll, vi förlorar direkt!' Flera killar flinar och tjejen backar undan sårad.",
           question: "Hur reagerar du på kommentaren?",
           options: [
-            {
-              id: 'A',
-              text: "Hålla med för att du verkligen vill vinna matchen.",
-              isCorrect: false,
-              feedback: "Att döma någons förmåga utifrån kön är sexism. Det sänker klassens sammanhållning och bryter mot skolans värdegrund."
-            },
-            {
-              id: 'B',
-              text: "Säga ifrån: 'Lägg ner, det handlar om vem som kämpar och har kul, inte vilket kön man har!'",
-              isCorrect: true,
-              feedback: "Spot on! Att markera mot könsfördomar skapar en schysst och inkluderande stämning. Plinten fälls upp och du hittar Förrådsnyckeln!"
-            },
-            {
-              id: 'C',
-              text: "Tänka att det bara är 'idrotts-tugg' som man får tåla när man spelar boll.",
-              isCorrect: false,
-              feedback: "Att ursäkta kränkningar som 'bara tugg' gör att gränserna flyttas och klimatet blir allt råare."
-            }
+            { id: 'A', text: "Hålla med för att du verkligen vill vinna matchen.", isCorrect: false, feedback: "Att döma någons förmåga utifrån kön är sexism och sänker klassens sammanhållning." },
+            { id: 'B', text: "Säga ifrån: 'Lägg ner, det handlar om att kämpa och ha kul, inte vilket kön man har!'", isCorrect: true, feedback: "Spot on! Att markera mot könsfördomar skapar en schysst och inkluderande stämning. Plinten fälls upp och du hittar Förrådsnyckeln!" },
+            { id: 'C', text: "Tänka att det bara är 'idrotts-tugg' som man får tåla.", isCorrect: false, feedback: "Att ursäkta kränkningar som 'bara tugg' gör att klimatet blir allt hårdare." }
           ],
-          rewardNote: "2. Dilemmat löst: Du stod upp mot sexism och tog Förrådsnyckeln!"
+          rewardNote: "2. Dilemmat löst: Du stod upp mot sexism och fann Förrådsnyckeln!"
         }
       },
       {
@@ -359,39 +262,25 @@
         title: "Elevhälsans rum",
         subtitle: "Olika förutsättningar i skolan. Lås upp arkivskåpet.",
         doorLabel: "ARKIVSKÅP",
-        keyItemName: "Nyckelkortet",
-        clueObject: {
-          name: "Broschyrstället",
-          pos: { x: 260, y: 280 },
+        keyName: "Nyckelkortet",
+        sparkles: [
+          { x: 250, y: 280, target: 'clue' },
+          { x: 490, y: 190, target: 'dilemma' },
+          { x: 710, y: 220, target: 'door' }
+        ],
+        clue: {
           title: "Likvärdig skola",
           text: "'Att behandla alla lika betyder inte att alla ska ha exakt samma sak. Det betyder att ge var och en det stöd som behövs för att lyckas utifrån sina förutsättningar.'",
-          notebook: "1. Broschyren: Rättvisa är att ge alla det stöd de behöver, inte exakt samma sak."
+          notebook: "1. Kuratorn: Rättvisa är att ge alla det stöd de behöver, inte exakt samma sak."
         },
-        dilemmaObject: {
-          name: "Krukväxten",
-          pos: { x: 520, y: 190 },
+        dilemma: {
           title: "Dilemma: 'Orättvisa anpassningar'",
-          situation: "En elev i klassen med dyslexi och ADHD får göra prov i ett enskilt lugnt rum och använda dator med talsyntes. Två andra elever muttrar högt i korridoren: 'Det är så jävla orättvist, varför får hen alltid fuskfördelar och mer tid? Hen är bara lat!'",
+          situation: "En elev i klassen med dyslexi och ADHD får göra prov i ett enskilt lugnt rum och använda dator med talsyntes. Två andra elever klagar högt: 'Det är så orättvist, varför får hen alltid fuskfördelar och mer tid? Hen är bara lat!'",
           question: "Hur bemöter du elevernas klagomål?",
           options: [
-            {
-              id: 'A',
-              text: "Förklara: 'Det är inte en fördel, det är ett hjälpmedel så att hen får samma chans som vi andra. Det är som att ha glasögon.'",
-              isCorrect: true,
-              feedback: "Perfekt pedagogiskt svar! Att förstå skillnaden mellan orättvisa privilegier och kompensatoriskt stöd motverkar funkofobi. Nyckelkortet blir ditt!"
-            },
-            {
-              id: 'B',
-              text: "Hålla med dem och säga att ni också borde kräva att få skriva prov i eget rum.",
-              isCorrect: false,
-              feedback: "Detta visar brist på förståelse för funktionsvariationer och ökar stigmatiseringen av eleven som behöver stöd."
-            },
-            {
-              id: 'C',
-              text: "Säga att eleven är konstig som inte klarar av att sitta med resten av klassen.",
-              isCorrect: false,
-              feedback: "Det här är en direkt funkofobisk kränkning som bryter mot skolans plan mot kränkande behandling."
-            }
+            { id: 'A', text: "Förklara: 'Det är inte en fördel, det är ett hjälpmedel så att hen får samma chans som vi andra. Det är som att ha glasögon.'", isCorrect: true, feedback: "Perfekt pedagogiskt svar! Att förstå skillnaden mellan orättvisa privilegier och kompensatoriskt stöd motverkar funkofobi. Nyckelkortet blir ditt!" },
+            { id: 'B', text: "Hålla med dem och kräva att ni också ska få sitta i eget rum.", isCorrect: false, feedback: "Detta visar bristande förståelse för funktionsvariationer och ökar stigmatiseringen." },
+            { id: 'C', text: "Säga att eleven är konstig som inte klarar att sitta med resten av klassen.", isCorrect: false, feedback: "Detta är en direkt funkofobisk kränkning som bryter mot likabehandlingsplanen." }
           ],
           rewardNote: "2. Dilemmat löst: Du motverkade funkofobi och fick Nyckelkortet!"
         }
@@ -401,41 +290,26 @@
         title: "Uppehållsrummet",
         subtitle: "När vänskap ställs på prov. Lås upp auladörren.",
         doorLabel: "AULADÖRR",
-        keyItemName: "Aulakoden: MOD2026",
-        doorRequiresKey: false,
+        keyName: "Koden: MOD2026",
         doorCode: "MOD2026",
-        clueObject: {
-          name: "Trygghetsaffischen",
-          pos: { x: 200, y: 150 },
+        sparkles: [
+          { x: 200, y: 150, target: 'clue' },
+          { x: 420, y: 320, target: 'dilemma' },
+          { x: 710, y: 220, target: 'door' }
+        ],
+        clue: {
           title: "Civilkurage i praktiken",
           text: "'Det största modet är ofta att våga säga ifrån till sina egna nära vänner när de gör fel. Riktiga vänner hjälper varandra att göra det rätta.'",
-          notebook: "1. Affischen: Äkta civilkurage är att våga säga till även sina nära vänner."
+          notebook: "1. Uppehållsrummet: Äkta civilkurage är att våga säga till även sina nära vänner."
         },
-        dilemmaObject: {
-          name: "Pingisbordet",
-          pos: { x: 380, y: 320 },
+        dilemma: {
           title: "Dilemma: Bästa kompisens övertramp",
-          situation: "Din allra bästa vän har börjat hänga med några äldre elever och försöker verka tuff. Vid pingisbordet börjar din vän plötsligt knuffa bort en tyst kille och kalla honom för förnedrande ord för att få de äldre att skratta. Din vän tittar på dig som att du ska heja på.",
+          situation: "Din allra bästa vän försöker verka tuff inför några äldre elever och börjar knuffa bort en tyst kille från pingisbordet och kalla honom för elaka ord. Din vän tittar på dig som att du ska skratta med.",
           question: "Vad gör du när det är din närmaste vän som kränker någon?",
           options: [
-            {
-              id: 'A',
-              text: "Flina med för att inte skämma ut din kompis inför de äldre eleverna.",
-              isCorrect: false,
-              feedback: "Att skydda en kompis som kränker andra är inte lojalitet – det är att möjliggöra destruktivt beteende."
-            },
-            {
-              id: 'B',
-              text: "Ta din vän i armen, dra hen åt sidan och säga med allvar: 'Lägg av direkt. Du behöver inte trycka ner andra för att vara cool, det där är inte den du är.'",
-              isCorrect: true,
-              feedback: "Enastående civilkurage! Att konfrontera sin egen vän kräver mest mod av allt, men räddar både offret och hjälper vännen att bryta sitt destruktiva mönster. Koden till aulan är MOD2026!"
-            },
-            {
-              id: 'C',
-              text: "Säga upp kontakten med din vän för alltid utan att säga ett ord.",
-              isCorrect: false,
-              feedback: "Att bara försvinna hjälper inte killen som blev utsatt och ger inte din vän chansen att förstå allvaret i sitt agerande."
-            }
+            { id: 'A', text: "Flina med för att inte skämma ut din kompis inför de äldre.", isCorrect: false, feedback: "Att heja på en kompis som kränker andra är inte lojalitet – det är feghet som möjliggör mobbning." },
+            { id: 'B', text: "Ta din vän åt sidan och säga med allvar: 'Lägg av direkt. Du behöver inte trycka ner andra för att vara cool, det där är inte den du är.'", isCorrect: true, feedback: "Enastående civilkurage! Att konfrontera sin egen vän kräver mest mod av allt, men räddar offret och hjälper vännen att bryta sitt mönster. Koden till aulan är MOD2026!" },
+            { id: 'C', text: "Säga upp kontakten helt i tysthet utan att säga något.", isCorrect: false, feedback: "Att bara försvinna hjälper varken offret eller din vän att förstå allvaret." }
           ],
           rewardNote: "2. Dilemmat löst: Koden till auladörren är MOD2026."
         }
@@ -445,41 +319,26 @@
         title: "Rektorns expedition",
         subtitle: "Sista utmaningen! Vem äger ansvaret för skolan?",
         doorLabel: "KASSASKÅPET",
-        keyItemName: "Slutkoden: SKOLKLIMAT",
-        doorRequiresKey: false,
+        keyName: "Slutkoden: SKOLKLIMAT",
         doorCode: "SKOLKLIMAT",
-        clueObject: {
-          name: "Diplomet på väggen",
-          pos: { x: 260, y: 130 },
+        sparkles: [
+          { x: 240, y: 130, target: 'clue' },
+          { x: 460, y: 280, target: 'dilemma' },
+          { x: 710, y: 220, target: 'door' }
+        ],
+        clue: {
           title: "Gemensamt ansvar",
-          text: "'En trygg skola bygger på 'ordning med omtanke' och starka relationer. Trygghet är inte ett projekt som tar slut – det är något vi skapar tillsammans varje dag.'",
-          notebook: "1. Diplomet: Skolklimatet formas av våra handlingar varje dag."
+          text: "'En trygg skola bygger på ordning med omtanke och varma relationer. Trygghet är inte ett projekt som tar slut – det är något vi skapar tillsammans varje dag.'",
+          notebook: "1. Rektorns kontor: Skolklimatet formas av våra handlingar varje dag."
         },
-        dilemmaObject: {
-          name: "Rektorns skrivbord",
-          pos: { x: 480, y: 280 },
+        dilemma: {
           title: "Dilemma: Skolans framtid",
-          situation: "På ett klassråd diskuteras tryggheten på skolan. Några elever säger uppgivet: 'Det är rektorns och lärarnas jobb att stoppa mobbning, det har inget med oss att göra. Vi är bara här för att få betyg.' Stämningen i klassrummet är tyst och uppgiven.",
-          question: "Hur sammanfattar du lärdomen från hela detta Escape Room?",
+          situation: "På ett klassråd säger några elever uppgivet: 'Det är rektorns och lärarnas jobb att stoppa mobbning, det har inget med oss elever att göra.' Stämningen är tyst och passiv.",
+          question: "Hur sammanfattar du lärdomen från hela spelet?",
           options: [
-            {
-              id: 'A',
-              text: "Hålla med om att elever inte har något ansvar alls för hur klasskamrater behandlas.",
-              isCorrect: false,
-              feedback: "Om elever frånsäger sig allt ansvar för normer och jargong kan ingen skola någonsin bli helt trygg."
-            },
-            {
-              id: 'B',
-              text: "Säga: 'Vuxna har det juridiska ansvaret, men hur vi pratar med varandra i korridoren, vilka vi bjuder in och om vi vågar säga ifrån skapar hela vårt SKOLKLIMAT.'",
-              isCorrect: true,
-              feedback: "Briljant! Det sammanfattar hela Olweus- och HateLess-arbetet. Trygghet skapas genom gemenskap och mod. Slutkoden till kassaskåpet är SKOLKLIMAT!"
-            },
-            {
-              id: 'C',
-              text: "Föreslå att man installerar övervakningskameror överallt så att eleverna slipper bry sig.",
-              isCorrect: false,
-              feedback: "Kameror skapar inte empati, tillit eller varma relationer. Ett gott klimat byggs inifrån gruppen."
-            }
+            { id: 'A', text: "Hålla med om att elever inte har något ansvar alls för hur kompisar behandlas.", isCorrect: false, feedback: "Om elever frånsäger sig allt ansvar för normer och jargong kan ingen skola någonsin bli helt trygg." },
+            { id: 'B', text: "Säga: 'Vuxna har det juridiska ansvaret, men hur vi pratar i korridoren, vilka vi bjuder in och om vi vågar säga ifrån skapar hela vårt SKOLKLIMAT.'", isCorrect: true, feedback: "Briljant! Det sammanfattar hela Olweus- och HateLess-arbetet. Trygghet skapas genom gemenskap och mod. Slutkoden till kassaskåpet är SKOLKLIMAT!" },
+            { id: 'C', text: "Föreslå att man sätter upp övervakningskameror överallt så att elever slipper bry sig.", isCorrect: false, feedback: "Kameror skapar inte empati, tillit eller varma relationer. Ett gott klimat byggs inifrån gruppen." }
           ],
           rewardNote: "2. Dilemmat löst: Slutkoden till kassaskåpet är SKOLKLIMAT."
         }
@@ -518,38 +377,34 @@
         setErrorMsg("");
       };
 
-      // Hantera när eleven väljer ett svar i det moraliska dilemmat
       const handleSelectOption = (option) => {
         setSelectedOptionId(option.id);
         setOptionFeedback(option);
         if (option.isCorrect) {
           setDilemmaSolved(true);
-          if (room.doorLabel !== "ARKIVDÖRR" && room.doorLabel !== "SERVERDÖRR" && room.doorLabel !== "AULADÖRR" && room.doorLabel !== "KASSASKÅPET") {
+          if (room.keyName && !room.doorCode) {
             const newInv = new Set(inventory);
-            newInv.add(room.keyItemName);
+            newInv.add(room.keyName);
             setInventory(newInv);
           }
         }
       };
 
-      // Hantera när eleven försöker gå igenom dörren
       const handleDoorAction = (e) => {
         if (e) e.preventDefault();
         
-        // Dörr som kräver fysisk nyckel
-        if (room.keyItemName && !room.doorCode) {
-          if (inventory.has(room.keyItemName)) {
+        if (room.keyName && !room.doorCode) {
+          if (inventory.has(room.keyName)) {
             advanceRoom();
           } else {
-            setErrorMsg(`Dörren är låst! Du måste lösa dilemmat i rummet för att få tag i '${room.keyItemName}'.`);
+            setErrorMsg(`Dörren är låst! Du måste lösa dilemmat i rummet för att få tag i '${room.keyName}'.`);
           }
         } else {
-          // Dörr som kräver kod
           const cleaned = doorInputCode.trim().toUpperCase();
           if (cleaned === room.doorCode) {
             advanceRoom();
           } else {
-            setErrorMsg("Fel dörrkod! Läs i anteckningsboken vad koden blev när ni löste dilemmat.");
+            setErrorMsg("Fel kod! Läs i anteckningsboken vad koden blev när ni löste dilemmat.");
           }
         }
       };
@@ -570,191 +425,304 @@
         }
       };
 
-      // Ritar ut 2D-illustrationen för det valda rummet
+      // Ritar ut rik och ombonad 2D-illustration i exakt samma stil som bildexemplen
       const renderRoomIllustration = (id) => {
         switch (id) {
-          case 1:
+          case 1: // KLASSRUM 8B
             return (
               <g>
-                <rect x="0" y="0" width="800" height="320" fill="#2c3e50" />
-                <rect x="0" y="320" width="800" height="180" fill="#95a5a6" />
-                <line x1="0" y1="320" x2="800" y2="320" stroke="#7f8c8d" strokeWidth="6" />
-                <rect x="50" y="40" width="140" height="140" fill="#1a252f" stroke="#ecf0f1" strokeWidth="6" rx="4" />
-                <line x1="120" y1="40" x2="120" y2="180" stroke="#ecf0f1" strokeWidth="4" />
-                <line x1="50" y1="110" x2="190" y2="110" stroke="#ecf0f1" strokeWidth="4" />
-                <circle cx="160" cy="70" r="14" fill="#f1c40f" opacity="0.85" />
-                {/* Whiteboard */}
+                {/* Bakgrund: Trävägg med varma paneler & trägolv */}
+                <rect x="0" y="0" width="800" height="330" fill="#2d3748" />
+                <rect x="0" y="0" width="800" height="330" fill="url(#woodWallPattern)" opacity="0.3" />
+                <rect x="0" y="330" width="800" height="170" fill="#78350f" />
+                <rect x="0" y="330" width="800" height="170" fill="url(#floorPlanks)" opacity="0.3" />
+                <line x1="0" y1="330" x2="800" y2="330" stroke="#451a03" strokeWidth="6" />
+
+                {/* Hängande ljusslinga längs taket (som i Tomtens verkstad) */}
+                <path d="M 0 20 Q 200 50 400 20 T 800 20" fill="none" stroke="#1a202c" strokeWidth="2.5" />
+                {[40, 100, 160, 220, 280, 340, 400, 460, 520, 580, 640].map((cx, i) => (
+                  <circle key={i} cx={cx} cy={cx % 120 === 40 ? 32 : 22} r="6" fill={['#ef4444', '#eab308', '#3b82f6', '#22c55e'][i % 4]} className="animate-pulse" />
+                ))}
+
+                {/* Fönster med måne och stjärnhimmel */}
+                <rect x="50" y="50" width="140" height="130" fill="#0f172a" stroke="#4a5568" strokeWidth="8" rx="4" />
+                <line x1="120" y1="50" x2="120" y2="180" stroke="#4a5568" strokeWidth="5" />
+                <line x1="50" y1="115" x2="190" y2="115" stroke="#4a5568" strokeWidth="5" />
+                <path d="M 155 75 A 18 18 0 1 0 175 95 A 22 22 0 1 1 155 75" fill="#fef08a" />
+                <circle cx="80" cy="80" r="2" fill="#ffffff" />
+                <circle cx="100" cy="140" r="2" fill="#ffffff" />
+
+                {/* Whiteboard med aluminiumram & anteckningar */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('clue')}>
-                  <rect x="220" y="50" width="320" height="150" fill="#f8fafc" stroke="#bdc3c7" strokeWidth="8" rx="6" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <rect x="235" y="65" width="290" height="120" fill="#ffffff" />
-                  <line x1="250" y1="90" x2="420" y2="90" stroke="#2980b9" strokeWidth="4" strokeLinecap="round" />
-                  <line x1="250" y1="115" x2="490" y2="115" stroke="#7f8c8d" strokeWidth="3" strokeLinecap="round" />
-                  <line x1="250" y1="135" x2="460" y2="135" stroke="#7f8c8d" strokeWidth="3" strokeLinecap="round" />
+                  <rect x="230" y="60" width="230" height="130" fill="#f8fafc" stroke="#94a3b8" strokeWidth="6" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <rect x="240" y="70" width="210" height="110" fill="#ffffff" />
+                  <line x1="255" y1="95" x2="380" y2="95" stroke="#0284c7" strokeWidth="3" strokeLinecap="round" />
+                  <line x1="255" y1="115" x2="430" y2="115" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="255" y1="135" x2="400" y2="135" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" />
+                  <rect x="300" y="185" width="50" height="5" fill="#dc2626" rx="2" />
                 </g>
-                {/* Bänk med lappen */}
+
+                {/* Grön Monstera-växt i lerkruka i hörnet */}
+                <polygon points="175,270 205,270 200,325 180,325" fill="#ea580c" />
+                <circle cx="190" cy="245" r="25" fill="#15803d" />
+                <circle cx="170" cy="225" r="20" fill="#16a34a" />
+                <circle cx="210" cy="230" r="22" fill="#22c55e" />
+
+                {/* Skolbänk i trä med metallben & öppet lock */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('dilemma')}>
-                  <rect x="340" y="310" width="220" height="80" fill="#d35400" stroke="#a04000" strokeWidth="4" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <rect x="360" y="390" width="14" height="80" fill="#7f8c8d" />
-                  <rect x="526" y="390" width="14" height="80" fill="#7f8c8d" />
-                  <polygon points="380,310 440,310 450,290 390,290" fill="#ecf0f1" stroke="#bdc3c7" strokeWidth="2" />
-                  <rect x="300" y="370" width="50" height="70" fill="#2980b9" rx="12" />
+                  <rect x="340" y="300" width="210" height="75" fill="#92400e" stroke="#78350f" strokeWidth="4" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <rect x="360" y="375" width="12" height="85" fill="#334155" />
+                  <rect x="518" y="375" width="12" height="85" fill="#334155" />
+                  {/* Laptop & kaffemugg */}
+                  <rect x="370" y="270" width="70" height="30" fill="#cbd5e1" rx="2" />
+                  <polygon points="360,300 450,300 440,305 370,305" fill="#94a3b8" />
+                  <rect x="470" y="280" width="20" height="20" fill="#dc2626" rx="3" />
                 </g>
               </g>
             );
 
-          case 2:
+          case 2: // KORRIDOREN
             return (
               <g>
-                <rect x="0" y="0" width="800" height="340" fill="#34495e" />
-                <rect x="0" y="340" width="800" height="160" fill="#7f8c8d" />
-                <line x1="0" y1="340" x2="800" y2="340" stroke="#2c3e50" strokeWidth="6" />
+                <rect x="0" y="0" width="800" height="340" fill="#334155" />
+                <rect x="0" y="340" width="800" height="160" fill="#475569" />
+                <line x1="0" y1="340" x2="800" y2="340" stroke="#1e293b" strokeWidth="6" />
+
+                {/* Taklampor med varmt ljus */}
+                <ellipse cx="240" cy="20" rx="30" ry="10" fill="#fef08a" />
+                <ellipse cx="520" cy="20" rx="30" ry="10" fill="#fef08a" />
+
+                {/* Stor anslagstavla med färgade post-its */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('clue')}>
-                  <rect x="80" y="60" width="220" height="150" fill="#d35400" stroke="#a04000" strokeWidth="8" rx="6" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <rect x="95" y="75" width="190" height="120" fill="#f39c12" />
-                  <rect x="110" y="90" width="45" height="45" fill="#f1c40f" />
-                  <rect x="170" y="95" width="50" height="40" fill="#e74c3c" />
+                  <rect x="80" y="65" width="210" height="150" fill="#b45309" stroke="#78350f" strokeWidth="8" rx="6" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <rect x="95" y="80" width="180" height="120" fill="#d97706" />
+                  <rect x="110" y="95" width="45" height="45" fill="#fef08a" />
+                  <rect x="170" y="100" width="50" height="40" fill="#f87171" />
+                  <rect x="215" y="140" width="45" height="45" fill="#86efac" />
                 </g>
+
+                {/* Rad med metallskåp */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('dilemma')}>
-                  <rect x="340" y="70" width="260" height="270" fill="#2980b9" stroke="#1f618d" strokeWidth="6" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <line x1="426" y1="70" x2="426" y2="340" stroke="#1f618d" strokeWidth="4" />
-                  <line x1="512" y1="70" x2="512" y2="340" stroke="#1f618d" strokeWidth="4" />
-                  <rect x="445" y="90" width="50" height="16" fill="#1f618d" rx="2" />
-                  <text x="470" y="102" fill="#ffffff" fontSize="11" fontWeight="bold" textAnchor="middle">14</text>
+                  <rect x="330" y="70" width="240" height="270" fill="#0284c7" stroke="#0369a1" strokeWidth="6" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <line x1="410" y1="70" x2="410" y2="340" stroke="#0369a1" strokeWidth="4" />
+                  <line x1="490" y1="70" x2="490" y2="340" stroke="#0369a1" strokeWidth="4" />
+                  {/* Skåp 14 (i mitten) med handtag och ventilgaller */}
+                  <rect x="430" y="90" width="40" height="16" fill="#075985" rx="2" />
+                  <text x="450" y="102" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">14</text>
+                  <circle cx="475" cy="180" r="5" fill="#facc15" />
+                </g>
+
+                {/* Bänk med kvarglömd gympapåse */}
+                <rect x="180" y="380" width="160" height="25" fill="#78350f" rx="3" />
+                <rect x="200" y="405" width="10" height="50" fill="#1e293b" />
+                <rect x="310" y="405" width="10" height="50" fill="#1e293b" />
+                <circle cx="250" cy="370" r="15" fill="#ec4899" />
+              </g>
+            );
+
+          case 3: // SKOLGÅRDEN
+            return (
+              <g>
+                {/* Natthimmel med fullmåne och stjärnor */}
+                <rect x="0" y="0" width="800" height="300" fill="#0f172a" />
+                <circle cx="680" cy="70" r="25" fill="#fef08a" opacity="0.9" />
+                <circle cx="120" cy="50" r="2.5" fill="#ffffff" />
+                <circle cx="280" cy="80" r="2" fill="#ffffff" />
+                <circle cx="450" cy="40" r="2" fill="#ffffff" />
+
+                {/* Skolgårdens asfalt */}
+                <rect x="0" y="300" width="800" height="200" fill="#334155" />
+                <ellipse cx="360" cy="430" rx="160" ry="40" fill="none" stroke="#64748b" strokeWidth="3" strokeDasharray="10 10" />
+
+                {/* Basketkorg med stolpe */}
+                <g className="cursor-pointer group" onClick={() => handleOpenModal('clue')}>
+                  <rect x="180" y="70" width="10" height="270" fill="#64748b" />
+                  <rect x="130" y="60" width="110" height="75" fill="#ffffff" stroke="#dc2626" strokeWidth="5" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <rect x="160" y="85" width="50" height="35" fill="none" stroke="#dc2626" strokeWidth="3" />
+                  <line x1="165" y1="120" x2="205" y2="120" stroke="#f97316" strokeWidth="5" />
+                  <polygon points="170,120 185,150 200,120" fill="none" stroke="#ffffff" strokeWidth="2" />
+                </g>
+
+                {/* Rastbänk med väska */}
+                <g className="cursor-pointer group" onClick={() => handleOpenModal('dilemma')}>
+                  <rect x="380" y="310" width="200" height="40" fill="#854d0e" stroke="#5c4033" strokeWidth="4" rx="3" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <rect x="400" y="350" width="12" height="60" fill="#1e293b" />
+                  <rect x="548" y="350" width="12" height="60" fill="#1e293b" />
+                  {/* Kvarglömd ryggsäck */}
+                  <rect x="460" y="270" width="45" height="45" fill="#2563eb" rx="8" />
+                  <rect x="470" y="280" width="25" height="25" fill="#60a5fa" rx="4" />
                 </g>
               </g>
             );
 
-          case 3:
+          case 4: // BIBLIOTEKET MED BRASA (Exakt som referensbilden)
             return (
               <g>
-                <rect x="0" y="0" width="800" height="300" fill="#1b2631" />
-                <circle cx="680" cy="60" r="22" fill="#f1c40f" opacity="0.9" />
-                <rect x="0" y="300" width="800" height="200" fill="#2c3e50" />
-                <g className="cursor-pointer group" onClick={() => handleOpenModal('clue')}>
-                  <rect x="180" y="80" width="10" height="260" fill="#7f8c8d" />
-                  <rect x="130" y="70" width="110" height="75" fill="#ecf0f1" stroke="#e74c3c" strokeWidth="5" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <line x1="165" y1="130" x2="205" y2="130" stroke="#d35400" strokeWidth="6" />
-                </g>
-                <g className="cursor-pointer group" onClick={() => handleOpenModal('dilemma')}>
-                  <rect x="400" y="310" width="200" height="40" fill="#795548" stroke="#4e342e" strokeWidth="4" rx="3" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <rect x="420" y="350" width="12" height="60" fill="#2c3e50" />
-                  <rect x="568" y="350" width="12" height="60" fill="#2c3e50" />
-                  <circle cx="480" cy="330" r="14" fill="#e74c3c" />
-                </g>
-              </g>
-            );
-
-          case 4:
-            return (
-              <g>
-                <rect x="0" y="0" width="800" height="320" fill="#1e272e" />
-                <rect x="0" y="320" width="800" height="180" fill="#4b382a" />
+                <rect x="0" y="0" width="800" height="320" fill="#1e293b" />
+                <rect x="0" y="320" width="800" height="180" fill="#5c4033" />
                 <line x1="0" y1="320" x2="800" y2="320" stroke="#3d2c1f" strokeWidth="6" />
+
+                {/* Stor bokhylla fylld med böcker */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('clue')}>
-                  <rect x="120" y="50" width="280" height="270" fill="#5c4033" stroke="#3d2c1f" strokeWidth="8" rx="6" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <rect x="135" y="110" width="250" height="10" fill="#3d2c1f" />
-                  <rect x="145" y="65" width="16" height="45" fill="#e74c3c" />
-                  <rect x="165" y="60" width="18" height="50" fill="#2980b9" />
-                  <rect x="187" y="70" width="14" height="40" fill="#f1c40f" />
-                  <rect x="250" y="140" width="80" height="60" fill="#3d2c1f" stroke="#795548" strokeWidth="3" rx="3" />
-                  <circle cx="290" cy="170" r="5" fill="#f1c40f" />
+                  <rect x="100" y="50" width="260" height="270" fill="#78350f" stroke="#451a03" strokeWidth="8" rx="6" className="group-hover:stroke-yellow-400 transition-colors" />
+                  {/* Hyllplan */}
+                  <rect x="110" y="110" width="240" height="10" fill="#451a03" />
+                  <rect x="110" y="180" width="240" height="10" fill="#451a03" />
+                  <rect x="110" y="250" width="240" height="10" fill="#451a03" />
+                  {/* Färgade böcker */}
+                  <rect x="120" y="65" width="16" height="45" fill="#dc2626" />
+                  <rect x="140" y="60" width="20" height="50" fill="#2563eb" />
+                  <rect x="165" y="70" width="14" height="40" fill="#eab308" />
+                  <rect x="185" y="62" width="22" height="48" fill="#16a34a" />
+                  <rect x="215" y="68" width="18" height="42" fill="#9333ea" />
+                  {/* Lönnfacket med mässingsknopp */}
+                  <rect x="235" y="130" width="80" height="50" fill="#451a03" stroke="#92400e" strokeWidth="3" rx="3" />
+                  <circle cx="275" cy="155" r="5" fill="#facc15" />
                 </g>
+
+                {/* Mysig öppen spis med sprakande brasa */}
+                <rect x="420" y="120" width="180" height="200" fill="#475569" stroke="#334155" strokeWidth="6" rx="4" />
+                <path d="M 460 220 C 460 170, 560 170, 560 220 L 560 320 L 460 320 Z" fill="#0f172a" />
+                {/* Flammande eld */}
+                <polygon points="510,230 480,310 540,310" fill="#ea580c" />
+                <polygon points="510,245 490,310 530,310" fill="#facc15" />
+
+                {/* Läsbord med boken och jordglob */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('dilemma')}>
-                  <rect x="440" y="250" width="160" height="70" fill="#795548" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <polygon points="480,250 540,250 530,225 490,225" fill="#ecf0f1" stroke="#bdc3c7" strokeWidth="2" />
+                  <rect x="430" y="330" width="160" height="60" fill="#78350f" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  {/* Jordglob */}
+                  <circle cx="560" cy="300" r="18" fill="#0284c7" />
+                  <path d="M 548 300 Q 560 290 572 300" stroke="#16a34a" strokeWidth="5" fill="none" />
+                  {/* Uppslagen bok */}
+                  <polygon points="460,330 520,330 515,310 475,310" fill="#ffffff" stroke="#cbd5e1" strokeWidth="2" />
                 </g>
               </g>
             );
 
-          case 5:
+          case 5: // DATASALEN
             return (
               <g>
                 <rect x="0" y="0" width="800" height="330" fill="#0f172a" />
                 <rect x="0" y="330" width="800" height="170" fill="#1e293b" />
                 <line x1="0" y1="330" x2="800" y2="330" stroke="#334155" strokeWidth="6" />
+
+                {/* Skrivbord med glödande datorskärmar */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('dilemma')}>
-                  <rect x="150" y="220" width="240" height="110" fill="#334155" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <rect x="170" y="120" width="90" height="70" fill="#1e293b" stroke="#64748b" strokeWidth="4" rx="3" />
-                  <rect x="176" y="126" width="78" height="58" fill={dilemmaSolved ? "#22c55e" : "#38bdf8"} opacity="0.9" />
-                  <line x1="215" y1="190" x2="215" y2="220" stroke="#64748b" strokeWidth="6" />
+                  <rect x="140" y="220" width="250" height="110" fill="#334155" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <rect x="160" y="120" width="100" height="80" fill="#1e293b" stroke="#64748b" strokeWidth="4" rx="4" />
+                  <rect x="168" y="128" width="84" height="64" fill={dilemmaSolved ? "#16a34a" : "#38bdf8"} opacity="0.9" />
+                  <line x1="210" y1="200" x2="210" y2="220" stroke="#64748b" strokeWidth="6" />
+                  {/* Skärm 2 */}
+                  <rect x="280" y="120" width="90" height="75" fill="#1e293b" stroke="#64748b" strokeWidth="4" rx="4" />
+                  <rect x="286" y="126" width="78" height="63" fill="#0f172a" />
+                  <line x1="325" y1="195" x2="325" y2="220" stroke="#64748b" strokeWidth="6" />
                 </g>
+
+                {/* Serverrack med blinkande lampor */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('clue')}>
-                  <rect x="450" y="70" width="140" height="260" fill="#020617" stroke="#475569" strokeWidth="6" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <rect x="470" y="140" width="30" height="30" fill="#facc15" rx="2" />
+                  <rect x="440" y="70" width="150" height="260" fill="#020617" stroke="#475569" strokeWidth="6" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <circle cx="470" cy="100" r="4" fill="#22c55e" className="animate-ping" />
+                  <circle cx="490" cy="100" r="4" fill="#ef4444" />
+                  {/* Gul post-it på servern */}
+                  <rect x="465" y="140" width="40" height="40" fill="#fef08a" />
                 </g>
               </g>
             );
 
-          case 6:
+          case 6: // CAFETERIAN
             return (
               <g>
                 <rect x="0" y="0" width="800" height="330" fill="#f8fafc" />
-                <rect x="0" y="330" width="800" height="170" fill="#e2e8f0" />
+                <rect x="0" y="330" width="800" height="170" fill="#cbd5e1" />
+                {/* Dryckesautomat */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('dilemma')}>
                   <rect x="120" y="70" width="180" height="260" fill="#e11d48" stroke="#be123c" strokeWidth="6" rx="6" className="group-hover:stroke-yellow-400 transition-colors" />
                   <rect x="140" y="90" width="140" height="110" fill="#0f172a" rx="4" />
+                  <rect x="155" y="110" width="20" height="35" fill="#38bdf8" rx="2" />
+                  <rect x="185" y="110" width="20" height="35" fill="#facc15" rx="2" />
+                  <rect x="215" y="110" width="20" height="35" fill="#22c55e" rx="2" />
+                  <rect x="140" y="240" width="140" height="45" fill="#1e293b" rx="4" />
                 </g>
+                {/* Cafébord med fika */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('clue')}>
                   <rect x="380" y="270" width="220" height="60" fill="#ffffff" stroke="#94a3b8" strokeWidth="4" rx="6" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <rect x="440" y="250" width="30" height="18" fill="#0f172a" rx="3" />
+                  <rect x="480" y="330" width="18" height="90" fill="#64748b" />
+                  <ellipse cx="489" cy="420" rx="50" ry="12" fill="#475569" />
+                  <rect x="430" y="240" width="30" height="18" fill="#0f172a" rx="3" />
                 </g>
               </g>
             );
 
-          case 7:
+          case 7: // IDROTTSHALLEN
             return (
               <g>
                 <rect x="0" y="0" width="800" height="300" fill="#0284c7" />
                 <rect x="0" y="300" width="800" height="200" fill="#f59e0b" />
+                {/* Ribbstolar */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('clue')}>
                   <rect x="420" y="50" width="180" height="250" fill="none" stroke="#d97706" strokeWidth="8" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  {[75, 100, 125, 150, 175, 200, 225, 250, 275].map((y, i) => (
+                    <line key={i} x1="424" y1={y} x2="596" y2={y} stroke="#f59e0b" strokeWidth="5" />
+                  ))}
                 </g>
+                {/* Plint & bänk */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('dilemma')}>
-                  <rect x="180" y="330" width="220" height="35" fill="#b45309" stroke="#78350f" strokeWidth="4" rx="3" className="group-hover:stroke-yellow-400 transition-colors" />
-                  <rect x="250" y="310" width="50" height="20" fill="#1e293b" rx="4" />
+                  <rect x="180" y="330" width="220" height="40" fill="#b45309" stroke="#78350f" strokeWidth="4" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <circle cx="230" cy="300" r="20" fill="#ea580c" />
                 </g>
               </g>
             );
 
-          case 8:
+          case 8: // KURATORN
             return (
               <g>
                 <rect x="0" y="0" width="800" height="320" fill="#fef3c7" />
                 <rect x="0" y="320" width="800" height="180" fill="#78350f" />
+                {/* Soffa */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('clue')}>
-                  <rect x="150" y="190" width="240" height="130" fill="#047857" stroke="#065f46" strokeWidth="6" rx="16" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <rect x="140" y="190" width="240" height="130" fill="#047857" stroke="#065f46" strokeWidth="6" rx="16" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <rect x="160" y="240" width="95" height="70" fill="#059669" rx="8" />
+                  <rect x="265" y="240" width="95" height="70" fill="#059669" rx="8" />
                 </g>
+                {/* Krukväxt */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('dilemma')}>
                   <polygon points="480,240 540,240 530,310 490,310" fill="#d97706" className="group-hover:stroke-yellow-400 transition-colors" />
                   <circle cx="510" cy="180" r="30" fill="#15803d" />
-                  <rect x="495" y="270" width="30" height="20" fill="#475569" rx="2" />
+                  <circle cx="480" cy="150" r="25" fill="#16a34a" />
                 </g>
               </g>
             );
 
-          case 9:
+          case 9: // UPPEHÅLLSRUMMET
             return (
               <g>
                 <rect x="0" y="0" width="800" height="310" fill="#1e1b4b" />
                 <rect x="0" y="310" width="800" height="190" fill="#312e81" />
+                {/* Affisch */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('clue')}>
                   <rect x="120" y="50" width="160" height="180" fill="#fbbf24" stroke="#d97706" strokeWidth="6" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <circle cx="200" cy="120" r="35" fill="#ef4444" />
                 </g>
+                {/* Pingisbord */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('dilemma')}>
                   <rect x="330" y="260" width="280" height="60" fill="#15803d" stroke="#ffffff" strokeWidth="4" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <line x1="470" y1="240" x2="470" y2="320" stroke="#ffffff" strokeWidth="4" />
                   <circle cx="430" cy="285" r="12" fill="#dc2626" />
                 </g>
               </g>
             );
 
-          case 10:
+          case 10: // REKTORN
             return (
               <g>
                 <rect x="0" y="0" width="800" height="320" fill="#312e81" />
                 <rect x="0" y="320" width="800" height="180" fill="#451a03" />
+                {/* Diplom */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('clue')}>
                   <rect x="180" y="50" width="160" height="120" fill="#fef08a" stroke="#ca8a04" strokeWidth="8" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
+                  <circle cx="260" cy="100" r="25" fill="#eab308" />
                 </g>
+                {/* Skrivbord */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('dilemma')}>
                   <rect x="380" y="240" width="220" height="90" fill="#78350f" stroke="#451a03" strokeWidth="6" rx="4" className="group-hover:stroke-yellow-400 transition-colors" />
                   <rect x="420" y="200" width="40" height="15" fill="#15803d" rx="3" />
@@ -769,8 +737,8 @@
 
       if (gameWon) {
         return (
-          <div className="min-h-screen bg-[#070e13] flex items-center justify-center p-4">
-            <div className="bg-[#111c24] border-2 border-yellow-400 rounded-3xl p-10 max-w-xl text-center shadow-2xl">
+          <div className="min-h-screen bg-[#07130e] flex items-center justify-center p-4">
+            <div className="bg-[#0e261f] border-2 border-yellow-400 rounded-3xl p-10 max-w-xl text-center shadow-2xl">
               <div className="w-24 h-24 mx-auto mb-6 bg-yellow-400/20 rounded-full flex items-center justify-center border-2 border-yellow-400">
                 <span className="text-5xl">🏆</span>
               </div>
@@ -790,22 +758,22 @@
       }
 
       return (
-        <div className="min-h-screen flex flex-col items-center justify-between p-4 max-w-5xl mx-auto">
+        <div className="w-full max-w-5xl mx-auto flex flex-col justify-between">
           
-          {/* HEADER */}
-          <header className="w-full mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-[#111c24] p-4 rounded-2xl border border-slate-800">
+          {/* HEADER / TITELRAD */}
+          <header className="w-full mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-[#0d221b] p-4 rounded-2xl border border-[#194435]">
             <div>
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 uppercase tracking-wider">
                   RUM {currentRoomIndex + 1} AV {ROOMS.length}
                 </span>
-                <span className="text-xs text-slate-400">• Dilemma-Escape</span>
+                <span className="text-xs text-slate-400">• Olweus & HateLess</span>
               </div>
               <h1 className="text-2xl font-black text-white mt-0.5">{room.title}</h1>
               <p className="text-xs text-slate-300">{room.subtitle}</p>
             </div>
 
-            {/* Rumsindikator */}
+            {/* Rumsindikator (1-10) */}
             <div className="flex items-center gap-1.5 overflow-x-auto py-1">
               {ROOMS.map((r, idx) => (
                 <div 
@@ -814,7 +782,7 @@
                     idx === currentRoomIndex 
                       ? 'bg-yellow-400 text-slate-950 scale-110 font-black ring-2 ring-yellow-200' 
                       : idx < currentRoomIndex 
-                        ? 'bg-emerald-900/60 text-emerald-300 border border-emerald-700/50' 
+                        ? 'bg-emerald-800 text-emerald-200' 
                         : 'bg-slate-800 text-slate-500 border border-slate-700'
                   }`}
                 >
@@ -824,55 +792,60 @@
             </div>
           </header>
 
-          {/* ================= DET INTERAKTIVA RUMMET (SVG) ================= */}
-          <main className="w-full relative aspect-[16/10] max-h-[500px] bg-[#070e13] rounded-3xl overflow-hidden border-4 border-slate-800 shadow-2xl">
+          {/* ================= DET DETALJERADE RUMMET (SVG) ================= */}
+          <main className="w-full relative aspect-[16/10] max-h-[480px] bg-[#07130e] rounded-3xl overflow-hidden border-4 border-[#14392c] shadow-2xl">
             
             <div key={currentRoomIndex} className="w-full h-full animate-room-change">
               <svg viewBox="0 0 800 500" className="w-full h-full select-none">
                 <defs>
+                  {/* Trätextur och golvmönster för genuin rumskänsla */}
+                  <pattern id="woodWallPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <line x1="0" y1="0" x2="0" y2="40" stroke="#000000" strokeWidth="1.5" opacity="0.15" />
+                  </pattern>
+                  <pattern id="floorPlanks" width="60" height="20" patternUnits="userSpaceOnUse">
+                    <line x1="0" y1="0" x2="60" y2="0" stroke="#000000" strokeWidth="2" opacity="0.2" />
+                    <line x1="60" y1="0" x2="60" y2="20" stroke="#000000" strokeWidth="2" opacity="0.2" />
+                  </pattern>
+
+                  {/* Det autentiska stjärnglittret */}
                   <g id="sparkle-star" className="sparkle-icon">
                     <polygon points="0,-14 4,-4 14,0 4,4 0,14 -4,4 -14,0 -4,-4" fill="#fef08a" />
                     <circle cx="0" cy="0" r="3" fill="#ffffff" />
                   </g>
                 </defs>
 
-                {/* 1. MÖBLERING OCH BAKGRUND */}
+                {/* 1. MÖBLER OCH RUMSBAKGRUND */}
                 {renderRoomIllustration(room.id)}
 
-                {/* 2. DÖRREN / EXIT-LÅSET */}
+                {/* 2. DÖRREN / SKÅPET MED DET GULA HÄNGLÅSET (Längst till höger) */}
                 <g className="cursor-pointer group" onClick={() => handleOpenModal('door')}>
                   <rect x="640" y="80" width="120" height="280" fill="#1e293b" stroke="#0f172a" strokeWidth="6" rx="4" />
-                  <rect x="650" y="90" width="100" height="260" fill={dilemmaSolved ? "#15803d" : "#b91c1c"} className="transition-colors" />
+                  <rect x="650" y="90" width="100" height="260" fill={dilemmaSolved ? "#15803d" : "#991b1b"} className="transition-colors group-hover:brightness-110" />
                   <rect x="665" y="115" width="70" height="60" fill="#0f172a" stroke="#ffffff" strokeWidth="2" opacity="0.8" rx="2" />
                   <rect x="660" y="60" width="80" height="22" fill="#dc2626" rx="3" />
                   <text x="700" y="75" fill="#ffffff" fontSize="10" fontWeight="black" textAnchor="middle">{room.doorLabel}</text>
                   
+                  {/* Det stora gula hänglåset */}
                   <rect x="685" y="215" width="30" height="25" fill="#facc15" stroke="#ca8a04" strokeWidth="2" rx="4" />
                   <path d="M 692 215 C 692 205, 708 205, 708 215" fill="none" stroke="#cbd5e1" strokeWidth="4" />
                   <circle cx="700" cy="227" r="3" fill="#854d0e" />
                 </g>
 
-                {/* 3. GLITTER PÅ DE INTERAKTIVA SAKERNA */}
-                <g transform={`translate(${room.clueObject.pos.x}, ${room.clueObject.pos.y})`}>
-                  <use href="#sparkle-star" />
-                </g>
-
-                <g transform={`translate(${room.dilemmaObject.pos.x}, ${room.dilemmaObject.pos.y})`}>
-                  <use href="#sparkle-star" />
-                </g>
-
-                <g transform="translate(700, 225)">
-                  <use href="#sparkle-star" />
-                </g>
+                {/* 3. STJÄRNGLITTER PÅ DE INTERAKTIVA FÖREMÅLEN */}
+                {room.sparkles.map((s, i) => (
+                  <g key={i} transform={`translate(${s.x}, ${s.y})`}>
+                    <use href="#sparkle-star" />
+                  </g>
+                ))}
 
               </svg>
             </div>
           </main>
 
-          {/* ================= BOTTENPANEL (ANTECKNINGSBOK & FASTNAT) ================= */}
+          {/* ================= BOTTENPANEL (EXAKT SOM I BILDEXEMPLET) ================= */}
           <footer className="w-full mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
             
-            {/* Anteckningsboken */}
+            {/* Vänster: Anteckningsboken på beigefärgat papper med handstil */}
             <div className="md:col-span-2 bg-[#fdfaf3] text-slate-800 rounded-2xl p-4 shadow-xl border-l-[12px] border-amber-600 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
               <div>
                 <div className="flex items-center justify-between border-b border-amber-200 pb-1 mb-2">
@@ -882,7 +855,7 @@
                   <div className="flex items-center gap-2">
                     {inventory.size > 0 && (
                       <span className="px-2 py-0.5 bg-amber-200 text-amber-900 rounded text-xs font-bold">
-                        🎒 Föremål: {Array.from(inventory).join(", ")}
+                        🎒 Nyckel: {Array.from(inventory).join(", ")}
                       </span>
                     )}
                   </div>
@@ -891,108 +864,112 @@
                 <ul className="space-y-1 font-handwriting text-xl text-slate-900 leading-snug">
                   {!discoveredClue && !dilemmaSolved && (
                     <li className="text-slate-400 italic text-lg list-none pt-2">
-                      Klicka på sakerna som glittrar i rummet för att undersöka situationen...
+                      Klicka på sakerna som glittrar i rummet för att påbörja undersökningen...
                     </li>
                   )}
                   {discoveredClue && (
                     <li className="flex items-start gap-2">
                       <span className="text-emerald-700 font-bold">✔</span>
-                      <span>{room.clueObject.notebook}</span>
+                      <span>{room.clue.notebook}</span>
                     </li>
                   )}
                   {dilemmaSolved && (
                     <li className="flex items-start gap-2 font-bold text-emerald-800">
                       <span className="text-emerald-700">✔</span>
-                      <span>{room.dilemmaObject.rewardNote}</span>
+                      <span>{room.dilemma.rewardNote}</span>
                     </li>
                   )}
                 </ul>
               </div>
 
               <div className="text-[11px] text-slate-400 pt-2 border-t border-amber-100 flex justify-between">
-                <span>Gör ett genomtänkt moraliskt val för att låsa upp nästa rum.</span>
-                <span>{dilemmaSolved ? "Dilemma avklarat!" : "Dilemma olöst"}</span>
+                <span>Undersök rummet och fatta rätt beslut för att gå vidare.</span>
+                <span>{dilemmaSolved ? "Dilemmat avklarat!" : "Dilemmat olöst"}</span>
               </div>
             </div>
 
-            {/* Fastnat-panel */}
-            <div className="bg-[#111c24] rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col justify-between">
+            {/* Höger: Fastnat? Panel */}
+            <div className="bg-[#0e261f] rounded-2xl p-4 shadow-xl border border-[#1a4233] flex flex-col justify-between">
               <div>
                 <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-1.5">
-                  <span className="text-yellow-400">💡</span> Behöver ni hjälp?
+                  <span className="text-yellow-400">💡</span> Fastnat?
                 </h3>
                 <p className="text-xs text-slate-300 mb-3">
-                  Diskutera dilemmat i gruppen: Vilket alternativ stödjer den utsatta och skapar trygghet?
+                  Klicka på sakerna som glittrar i rummet. Behöver ni hjälp med vad nästa steg är?
                 </p>
               </div>
 
               {showHint ? (
                 <div className="p-2.5 bg-yellow-400/10 border border-yellow-400/30 rounded-xl text-xs text-yellow-300">
-                  <strong>Reflektionstips:</strong> Tänk på Olweus princip: Den som är tyst stödjer mobbaren. Den som agerar visar civilkurage.
+                  <strong>Reflektionstips:</strong> Den som är tyst stöttar mobbaren. Den som sätter gränser visar civilkurage.
                 </div>
               ) : (
                 <button 
                   onClick={() => setShowHint(true)}
-                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-yellow-300 text-xs font-bold rounded-xl border border-yellow-400/30 transition-colors"
+                  className="w-full py-2.5 bg-yellow-400 hover:bg-yellow-300 text-slate-950 text-xs font-bold rounded-xl transition-colors uppercase tracking-wider"
                 >
-                  Visa tips
+                  Visa en ledtråd
                 </button>
               )}
             </div>
           </footer>
 
-          {/* ================= MODAL / POPUP ================= */}
+          {/* ================= MODALER / POPUPS (EXAKT SOM I BILDERNA) ================= */}
           {activeModal && (
             <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-              <div className="bg-[#111c24] border-2 border-slate-700 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl animate-room-change">
+              <div className="bg-[#0e261f] border-2 border-[#1a4233] rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl animate-room-change">
                 
-                {/* Header */}
-                <div className="px-5 py-3.5 bg-slate-800/80 border-b border-slate-700 flex justify-between items-center">
+                {/* Header med titel och Stäng X */}
+                <div className="px-5 py-3.5 bg-[#091b16] border-b border-[#1a4233] flex justify-between items-center">
                   <h3 className="font-bold text-white text-sm flex items-center gap-2">
                     {activeModal === 'door' && '🔐 ' + room.doorLabel}
-                    {activeModal === 'clue' && '🔍 ' + room.clueObject.name}
-                    {activeModal === 'dilemma' && '⚖️ ' + room.dilemmaObject.title}
+                    {activeModal === 'clue' && '🔍 ' + room.clue.title}
+                    {activeModal === 'dilemma' && '⚖️ ' + room.dilemma.title}
                   </h3>
-                  <button onClick={handleCloseModal} className="text-slate-400 hover:text-white text-xs px-2.5 py-1 bg-slate-700 rounded-md">
-                    Stäng ✕
+                  <button onClick={handleCloseModal} className="text-slate-300 hover:text-white text-xs px-2.5 py-1 bg-white/10 hover:bg-white/20 rounded-md">
+                    Stäng X
                   </button>
                 </div>
 
                 {/* Innehåll */}
                 <div className="p-6">
                   
-                  {/* MODAL 1: LEDTRÅDS-OBJEKTET */}
+                  {/* MODAL 1: LAPPEN MED RÖD KARTNÅL (EXAKT SOM I SCREENSHOT 54) */}
                   {activeModal === 'clue' && (
                     <div>
-                      <div className="bg-[#fdfaf3] text-slate-800 p-5 rounded-xl mb-5 font-handwriting text-2xl leading-snug shadow-inner border border-amber-200">
-                        "{room.clueObject.text}"
+                      <div className="relative bg-[#fdfbf7] text-slate-800 p-6 rounded-xl shadow-lg border border-amber-200 mb-6">
+                        {/* Röd kartnål högst upp i mitten */}
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-red-600 rounded-full border-2 border-red-700 shadow-md"></div>
+                        <p className="font-handwriting text-2xl leading-relaxed text-slate-900 pt-2 text-center">
+                          "{room.clue.text}"
+                        </p>
                       </div>
                       <button 
                         onClick={handleCloseModal} 
                         className="w-full py-3 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold rounded-xl transition-all shadow-md uppercase tracking-wider text-xs"
                       >
-                        Anteckna i boken
+                        Skriv in i anteckningsboken
                       </button>
                     </div>
                   )}
 
-                  {/* MODAL 2: DET MORALISKA DILEMMAT */}
+                  {/* MODAL 2: MORALISKT DILEMMA */}
                   {activeModal === 'dilemma' && (
                     <div>
-                      <div className="bg-slate-900/90 border border-slate-700 p-4 rounded-xl mb-4">
-                        <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider block mb-1">Situation:</span>
+                      <div className="bg-[#091813] border border-[#1a4233] p-4 rounded-xl mb-4">
+                        <span className="text-[11px] font-bold text-yellow-400 uppercase tracking-wider block mb-1">Situation:</span>
                         <p className="text-slate-200 text-sm leading-relaxed">
-                          {room.dilemmaObject.situation}
+                          {room.dilemma.situation}
                         </p>
                       </div>
 
-                      <p className="text-yellow-400 text-xs font-bold uppercase tracking-wider mb-2">
-                        {room.dilemmaObject.question}
+                      <p className="text-yellow-300 text-xs font-bold uppercase tracking-wider mb-2">
+                        {room.dilemma.question}
                       </p>
 
                       {/* Alternativen A, B, C */}
                       <div className="space-y-2 mb-4">
-                        {room.dilemmaObject.options.map((opt) => (
+                        {room.dilemma.options.map((opt) => (
                           <button
                             key={opt.id}
                             disabled={dilemmaSolved}
@@ -1002,16 +979,16 @@
                                 ? opt.isCorrect
                                   ? 'bg-emerald-950/80 border-emerald-500 text-emerald-200'
                                   : 'bg-rose-950/80 border-rose-500 text-rose-200 animate-shake'
-                                : 'bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 text-slate-200'
+                                : 'bg-[#133328] hover:bg-[#1a4233] border-[#1d4d3d] text-slate-200'
                             }`}
                           >
-                            <span className="font-bold text-amber-400 shrink-0">{opt.id}.</span>
+                            <span className="font-bold text-yellow-400 shrink-0">{opt.id}.</span>
                             <span>{opt.text}</span>
                           </button>
                         ))}
                       </div>
 
-                      {/* Pedagogisk Feedback */}
+                      {/* Återkoppling på valet */}
                       {optionFeedback && (
                         <div className={`p-3.5 rounded-xl text-xs leading-relaxed mb-4 border ${
                           optionFeedback.isCorrect 
@@ -1019,7 +996,7 @@
                             : 'bg-rose-500/10 border-rose-500/40 text-rose-300'
                         }`}>
                           <strong className="block mb-1 font-bold">
-                            {optionFeedback.isCorrect ? '✓ Rätt val och analys:' : '⚠ Tänk ett varv till:'}
+                            {optionFeedback.isCorrect ? '✓ Rätt beslut:' : '⚠ Tänk ett varv till:'}
                           </strong>
                           {optionFeedback.feedback}
                         </div>
@@ -1028,7 +1005,7 @@
                       {dilemmaSolved && (
                         <button 
                           onClick={handleCloseModal}
-                          className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg"
+                          className="w-full py-3 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg"
                         >
                           Fortsätt till dörren ➔
                         </button>
@@ -1036,23 +1013,23 @@
                     </div>
                   )}
 
-                  {/* MODAL 3: HUVUDDÖRREN */}
+                  {/* MODAL 3: DÖRREN / EXIT */}
                   {activeModal === 'door' && (
                     <div>
-                      {room.keyItemName && !room.doorCode ? (
+                      {room.keyName && !room.doorCode ? (
                         <div className="text-center">
                           <p className="text-slate-300 text-sm mb-4 leading-relaxed">
-                            Dörren är låst. För att öppna krävs: <br/>
-                            <strong className="text-yellow-400 text-base">{room.keyItemName}</strong>.
+                            Den här dörren är låst med ett tungt hänglås och kräver: <br/>
+                            <strong className="text-yellow-400 text-base">{room.keyName}</strong>.
                           </p>
-                          {inventory.has(room.keyItemName) ? (
+                          {inventory.has(room.keyName) ? (
                             <div>
                               <p className="text-emerald-400 font-bold text-sm mb-4">
-                                ✓ Du har {room.keyItemName} i ditt förråd!
+                                ✓ Du har {room.keyName} i ditt förråd!
                               </p>
                               <button 
                                 onClick={handleDoorAction} 
-                                className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg"
+                                className="w-full py-3 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg"
                               >
                                 Lås upp och gå till nästa rum ➔
                               </button>
@@ -1060,7 +1037,7 @@
                           ) : (
                             <div>
                               <p className="text-rose-400 text-xs font-semibold mb-4">
-                                Du saknar nyckeln. Lös dilemmat i rummet för att få den!
+                                Du saknar nyckeln. Undersök sakerna som glittrar och lös dilemmat först!
                               </p>
                               <button 
                                 onClick={handleCloseModal} 
@@ -1074,7 +1051,7 @@
                       ) : (
                         <div>
                           <p className="text-slate-300 text-sm mb-3">
-                            Skriv in koden som avslöjades när ni löste dilemmat:
+                            Skriv in koden som avslöjades i anteckningsboken när ni löste dilemmat:
                           </p>
                           <form onSubmit={handleDoorAction} className="space-y-3">
                             <input 
@@ -1083,7 +1060,7 @@
                               onChange={(e) => setDoorInputCode(e.target.value)}
                               placeholder="SKRIV DÖRRKODEN HÄR..."
                               autoFocus
-                              className="w-full py-3 px-4 bg-slate-950 border-2 border-slate-700 focus:border-yellow-400 rounded-xl text-center text-lg font-black text-white tracking-widest uppercase focus:outline-none"
+                              className="w-full py-3 px-4 bg-[#091813] border-2 border-[#1a4233] focus:border-yellow-400 rounded-xl text-center text-lg font-black text-white tracking-widest uppercase focus:outline-none"
                             />
                             {errorMsg && <p className="text-xs text-rose-400 font-bold text-center animate-shake">{errorMsg}</p>}
                             <button 
